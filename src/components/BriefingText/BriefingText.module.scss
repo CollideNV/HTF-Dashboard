@@ -1,0 +1,44 @@
+.BriefingText {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    font-size: 120%;
+    font-family: 'archiaregular';
+
+    code {
+        background: rgba(45, 225, 136, 0.2);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        white-space: pre-line;
+        display: block;
+    }
+
+    blockquote {
+        display: block;
+        background: rgba(148, 139, 58, 0.2);
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    p {
+        color: white;
+    }
+    p a {
+        color: #2de188;
+    }
+    h1 {
+        color: #2de188;
+    }
+    h2 {
+        color: #2de188;
+    }
+    h3 {
+        color: #2de188;
+    }
+    h4 {
+        color: #2de188;
+    }
+}
