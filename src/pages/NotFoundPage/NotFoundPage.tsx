@@ -26,7 +26,7 @@ const NotFoundPage: FC = () => {
                     />
                 </div>
             </div>
-            <p>{'It looks like your lost in the jungle!'}</p>
+            <p>{'It looks like your lost in Space!'}</p>
             <Button
                 variant="contained"
                 onClick={() => redirectToHomePage()}
@@ -35,7 +35,7 @@ const NotFoundPage: FC = () => {
                     color: 'white'
                 }}
             >
-                Go Back to the jungle
+                Go Back to your space ship
             </Button>
         </div>
     )

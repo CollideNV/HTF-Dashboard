@@ -24,31 +24,31 @@ const mockTeams: Team[] = [
                 name: 'Flood',
                 score: 10,
                 solved: true,
-                tools: [
+                mission: [
                     {
                         difficulty: 1,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '10',
                         solved: true
                     },
                     {
                         difficulty: 2,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: 'unlimited',
                         solved: true
                     },
                     {
                         difficulty: 3,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '0',
                         solved: true
                     }
@@ -60,67 +60,67 @@ const mockTeams: Team[] = [
                 name: 'Drought',
                 score: 10,
                 solved: false,
-                tools: [
+                mission: [
                     {
                         difficulty: 2,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: 'unlimited',
                         solved: true
                     },
                     {
                         difficulty: 1,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '10',
                         solved: true
                     },
                     {
                         difficulty: 3,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '0',
                         solved: true
                     }
                 ]
             },
             {
-                badgeUrl: BadgeType.WILDLIFE_BADGE,
+                badgeUrl: BadgeType.ALIEN_ENCOUNTER_BADGE,
                 description: '',
                 name: 'Meteor Impact',
                 score: 10,
                 solved: false,
-                tools: [
+                mission: [
                     {
                         difficulty: 3,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '0',
                         solved: true
                     },
                     {
                         difficulty: 1,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '10',
                         solved: true
                     },
                     {
                         difficulty: 2,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: 'unlimited',
                         solved: true
                     }
@@ -138,31 +138,31 @@ const mockTeams: Team[] = [
                 name: 'Flood',
                 score: 10,
                 solved: true,
-                tools: [
+                mission: [
                     {
                         difficulty: 1,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '10',
                         solved: null
                     },
                     {
                         difficulty: 2,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: 'unlimited',
                         solved: true
                     },
                     {
                         difficulty: 3,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '0',
                         solved: false
                     }
@@ -174,67 +174,67 @@ const mockTeams: Team[] = [
                 name: 'Drought',
                 score: 10,
                 solved: false,
-                tools: [
+                mission: [
                     {
                         difficulty: 2,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: 'unlimited',
                         solved: true
                     },
                     {
                         difficulty: 1,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '10',
                         solved: null
                     },
                     {
                         difficulty: 3,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '0',
                         solved: false
                     }
                 ]
             },
             {
-                badgeUrl: BadgeType.WILDLIFE_BADGE,
+                badgeUrl: BadgeType.ALIEN_ENCOUNTER_BADGE,
                 description: '',
                 name: 'Meteor Impact',
                 score: 10,
                 solved: false,
-                tools: [
+                mission: [
                     {
                         difficulty: 3,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '0',
                         solved: false
                     },
                     {
                         difficulty: 1,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '10',
                         solved: true
                     },
                     {
                         difficulty: 2,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: 'unlimited',
                         solved: false
                     }
@@ -252,31 +252,31 @@ const mockTeams: Team[] = [
                 name: 'Flood',
                 score: 10,
                 solved: true,
-                tools: [
+                mission: [
                     {
                         difficulty: 1,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '10',
                         solved: null
                     },
                     {
                         difficulty: 2,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: 'unlimited',
                         solved: true
                     },
                     {
                         difficulty: 3,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '0',
                         solved: false
                     }
@@ -288,67 +288,67 @@ const mockTeams: Team[] = [
                 name: 'Drought',
                 score: 10,
                 solved: false,
-                tools: [
+                mission: [
                     {
                         difficulty: 2,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: 'unlimited',
                         solved: true
                     },
                     {
                         difficulty: 1,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '10',
                         solved: null
                     },
                     {
                         difficulty: 3,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '0',
                         solved: false
                     }
                 ]
             },
             {
-                badgeUrl: BadgeType.WILDLIFE_BADGE,
+                badgeUrl: BadgeType.ALIEN_ENCOUNTER_BADGE,
                 description: '',
                 name: 'Meteor Impact',
                 score: 10,
                 solved: false,
-                tools: [
+                mission: [
                     {
                         difficulty: 3,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '0',
                         solved: false
                     },
                     {
                         difficulty: 1,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: '10',
                         solved: null
                     },
                     {
                         difficulty: 2,
                         effect: '',
-                        ingredients: '',
+                        parameters: '',
                         name: '',
-                        recipe: '',
+                        objective: '',
                         remainingAttempts: 'unlimited',
                         solved: true
                     }

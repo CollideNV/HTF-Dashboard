@@ -33,7 +33,7 @@ body {
     color: $main-text-color;
     background-color: $main-background-color;
     font-size: $main-text-size;
-    background-image: url('../resources/assets/landscape.jpg');
+    background-image: url('../resources/assets/wall.png');
     background-size: cover;
 }
 
@@ -50,17 +50,17 @@ code {
   
   /* Thumb (the draggable part of the scrollbar) */
   ::-webkit-scrollbar-thumb {
-    background: #2de188; /* Color of the thumb */
+    background: #f98100; /* Color of the thumb */
   }
   
   /* Add hover effect */
   ::-webkit-scrollbar-thumb:hover {
-    background: #2de188; /* Color on hover */
+    background: #f98100; /* Color on hover */
   }
   
   /* Button (the buttons at the top and bottom of the scrollbar) */
   ::-webkit-scrollbar-button {
-    background: #2de188; /* Color of the buttons */
+    background: #f98100; /* Color of the buttons */
   }
   
   /* Track on hover */

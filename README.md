@@ -1,168 +1,121 @@
-# Briefing - Collide Jungle Institute
 
-In de schaduw van een dreiging die de toekomst van ontelbare dier- en plantensoorten verduistert, roepen wij een gloednieuwe generatie digitale pioniers en ecologische avonturiers op om zich aan te sluiten bij het CJI. Dit instituut is ons antwoord op de roep van de wildernis, een hoopvolle oase in een wereld vol uitdagingen, waar we koesteren wat de natuur ons schenkt en streven naar het behoud van haar schatten. Samen gaan we op een epische reis om de prachtige flora en fauna van de jungle te koesteren en te beschermen.
+# 🌌 Collide Space Center 🌌
 
-Met de kracht van fullstack technologieën, ontsluit je geheime toegang tot vergeten API-tools. Maar, wees gewaarschuwd, niet alle van deze digitale gereedschappen zijn even trefzeker. Samen met je moedige metgezellen, ontsluit je de poorten naar creativiteit en smeed je gloednieuwe API-tools om de onontgonnen paden van de digitale jungle te effenen, terwijl je de vergeten handleiding herschrijft en verbetert. Hier in deze spannende digitale wildernis, waar code de taal is en avontuur wacht bij elke regel, zijn jullie de moderne ontdekkingsreizigers die de digitale horizon verbreden.
+Welkom bij het Collide Space Center! Dit project roept een nieuwe generatie van digitale pioniers en kosmische avonturiers op om de mysteries van het universum te ontsluieren en de grenzen van technologie te verleggen. Samen ontwikkelen we nieuwe technologieën en tools om de uitdagingen van de ruimte te overwinnen.
 
+## 🌠 Over het Project
 
-## TL;DR
+In dit project werk je samen met je team om vergeten ruimte-tools te ontdekken en wereldproblemen op te lossen. Jullie verkennen de uitgestrekte paden van de kosmos door middel van geavanceerde technologieën, en ontwikkelen nieuwe tools en verbeteringen die de toekomst van ruimteverkenning vormgeven.
 
-In een epische zoektocht om de mensheid te redden van de dreigende afgrond, treden we in de voetsporen van digitale schatzoekers. Onze missie: vergeten tools te ontdekken, als verborgen artefacten van hoop. Deze verloren tools ontsluiten we door codering en de resultaten sturen we op, of wie weet zelfs door de lucht via postduiven.
+### Doelstellingen
 
-Vrees niet, we sturen jullie niet onvoorbereid op deze queeste. Als geschenk uit het digitale rijk krijgen jullie een jungle handleiding, een schatkaart van kennis, om jullie bij te staan op deze avontuurlijke reis.
+- Ontdek en gebruik vergeten ruimte-tools om kosmische problemen op te lossen.
+- Ontwikkel nieuwe technologieën door gebruik te maken van moderne fullstack-technologieën.
+- Werk samen met je team om de beste oplossingen te vinden en badges en punten te verdienen.
 
+## 🛠️ Installatie
 
-## Hoe ga je te werk?
+Volg de onderstaande stappen om het project lokaal op je machine te installeren:
 
-Om te beginnen, bedenk samen met je digitale avonturiers een krachtige teamnaam. Maak je team aan via onze API door je teamnaam op te sturen. Zodra dit gebeurd is, krijg je jouw unieke nummer terug.
+1. **Clone de repository**:
 
+    ```bash
+    git clone https://github.com/CollideNV/htf-2024-angular.git
+    git clone https://github.com/CollideNV/htf-2024-vue.git
+    git clone https://github.com/CollideNV/htf-2024-react.git
+    ```
 
-```
-path: /team
-method: POST
-body: {"name": "<jouw team naam>"}
-```
+2. **Navigeer naar de gewenste projectmap**:
 
-> **Let op!** vergeet deze zeker niet te noteren 🪶 op een stukje perkament 📜 en deel deze met niemand 🤫.
+    ```bash
+    cd htf-2024-angular  # of htf-2024-vue of htf-2024-react
+    ```
 
-### Queeste starten
+3. **Installeer de afhankelijkheden**:
 
-Met jouw unieke nummer kan je nu jouw queeste starten. Spreek onze API opnieuw aan en vraag om een nieuwe queeste te starten met jouw unieke nummer.
+    ```bash
+    npm install
+    ```
 
-Wanneer je de roep van avontuur beantwoordt en je queeste begint, zal jouw dappere team als bij toverslag verschijnen op het epische dashboard van ontdekking.
+4. **Start de applicatie**:
 
-```
-path: /quest
-method: POST
-query: teamId
-```
+    ```bash
+    npm start
+    ```
 
-Je kan altijd je [queeste opnieuw opvragen](https://htf.bewire.org/swagger-ui.html#/problem-controller/getQuestUsingGET) met een schat aan wereldproblemen, betoverende tools en de kostbare hints die hen vergezellen. Dit kun je doen door de volgende avontuurlijke poort te openen:
+Je applicatie zou nu lokaal moeten draaien!
 
-```
-path: /problems/{teamId}
-method: GET
-```
+## 🚀 Hoe te Gebruiken
 
-### Front-end taak
+1. **Maak een team aan**: Bedenk samen met je team een naam en stuur deze via onze API om je team aan te maken. Vergeet niet je unieke team-ID te noteren!
 
-Jouw front-end taak is het ophalen van je queeste, deze stylen, en tonen in een pagina.
+    ```bash
+    POST /team
+    Body: {"name": "<jouw team naam>"}
+    ```
 
-Van ons krijg je alvast een web component met een HTML template en de functionaliteit om je antwoord te sturen naar onze API.
+2. **Start je queeste**: Gebruik je unieke team-ID om een nieuwe queeste te starten.
 
-Je bent vrij in je keuze van front-end frameworks. Wij hebben een startup project voorzien voor de 3 meest populaire frameworks.
+    ```bash
+    POST /quest
+    Query: teamId=<jouw team ID>
+    ```
 
-Clone één van de volgende repositories.
+3. **Gebruik tools en los problemen op**: Verken de problemen en gebruik de juiste tools om ze op te lossen. Let op de efficiëntie van elke tool en werk samen met je team om de beste resultaten te behalen.
 
+    ```bash
+    GET /problems/{teamId}
+    POST /use/{toolId}?formula=<jouw oplossing>
+    ```
 
-```
-git clone https://github.com/CollideNV/htf-2023-angular.git
-```
-```
-git clone https://github.com/CollideNV/htf-2023-vue.git
-```
-```
-git clone https://github.com/CollideNV/htf-2023-react.git
-```
+4. **Bekijk je voortgang en verdien badges**: Behaal badges en verbeter je score door problemen op te lossen en tools efficiënt te gebruiken.
 
-### Gebruik web component
+## 🌌 API Endpoints
 
-De nodige setup en installatie van de web component is voorzien in de startup projecten.
+Hier zijn de belangrijkste API endpoints die je nodig hebt om deel te nemen aan de queeste:
 
-De component heeft de HTML tag "htf-2023" en accepteert 2 attributen, `quest` en `url`
+- **Team Aanmaken**:
+  
+  ```http
+  POST /team
+  Body: {"name": "<jouw team naam>"}
+  ```
 
-#### Attribuut quest
+- **Queeste Starten**:
 
-Je kan je queeste als object of als JSON string meegeven.
+  ```http
+  POST /quest
+  Query: teamId=<jouw team ID>
+  ```
 
-Voorbeeld angular:
-```
-<htf-2023 [quest]="quest"></htf-2023>
-```
-Voorbeeld vue:
-```
-<htf-2023 .quest="quest"></htf-2023>
-```
-Voorbeeld react:
-```
-<htf-2023 quest={JSON.stringify(quest)}></htf-2023>
-```
+- **Problemen Opvragen**:
 
-#### Attribuut url
+  ```http
+  GET /problems/{teamId}
+  ```
 
-Wanneer je een tool selecteert, verschijnt een knop met de aanduiding "Use Tool" . Als standaardoptie wordt naast deze knop een invoerveld weergegeven waarin je je antwoord kunt invoeren.
+- **Tool Gebruiken**:
 
+  ```http
+  POST /use/{toolId}?formula=<jouw oplossing>
+  ```
 
-Optioneel heb je ook de mogelijkheid om de URL van je back-end door te geven. In dat geval wordt het invoerveld vervangen door een functionaliteit waarbij de component je antwoord ophaalt bij jouw back-end.
+- **Queeste Opgeven**:
 
-De component maakt een call naar:
+  ```http
+  POST /quest/{teamId}/abandon
+  ```
 
-```
-url: http://{url}/{toolId}
-method: POST
-body: ingredients
-```
+## 🤝 Bijdragen
 
-#### Classen
+Bijdragen aan dit project zijn altijd welkom! Voel je vrij om een pull request in te dienen of een issue te openen om suggesties voor verbeteringen te bespreken.
 
-Je kan gebruik maken van de volgende classen om je queeste te stylen:
+1. Fork de repository
+2. Maak een nieuwe branch (`git checkout -b feature-branch`)
+3. Commit je wijzigingen (`git commit -m 'Add a new feature'`)
+4. Push naar de branch (`git push origin feature-branch`)
+5. Open een Pull Request
 
-```
-problem 
-problem-name 
-description 
-tool 
-tool-name 
-effect 
-challenge 
-recipe 
-ingredients 
-remainingAttempts 
-difficulty
+---
 
-```
-
-Optionele classen:
-
-```
-solved (van toepassing bij problem en tool) active (geselecteerde tool)
-
-```
-
-### Wereldproblemen
-
-Met het starten van je queeste worden 3 wereldproblemen op je afgevuurd.
-
-Elk wereldprobleem heeft 3 effectieve tools waarvan je minstens 2 correct moet gebruiken om een wereldprobleem op te lossen.
-
-### Tools vinden
-
-Bij elk probleem krijg je een lijst van tools die het probleem mogelijk kunnen verhelpen. Maar let op, niet elke tool is even efficiënt. Hoe efficiënter de tool, hoe moeilijker de opgave en hoe hoger de punten gaan zijn.
-
-Bij elke tool krijg je de id, de uitleg wat deze doet, het recept (de opgave) en de ingrediënten (input voor de opgave).
-
-Om een tool te gebruiken, gebruik je volgende endpoint met je resultaat van de opgave:
-
-```
-path: /use/{toolId}
-method: POST
-query: ?formula=<jouw oplossing>
-```
-
-> **Let op!** Voor sommige tools kan je maar een aantal keer de formule doorgeven voordat dit hulpmiddel stuk gaat. Je kan deze tool dan helaas **niet meer gebruiken**.
->
-
-### Badges & Score
-
-Zodra je een tool correct hebt gebruikt, krijg je een badge voor deze tool. Je kan jouw behaalde badges bekijken per wereldprobleem op het epische dashboard van ontdekking.
-
-Heb je twee tools van een wereldprobleem correct gebruikt? Dan heb je dit wereldprobleem al goed verholpen en krijg je een score! Je kan ervoor kiezen om de laatste tool te gebruiken om een hogere score of een ander wereldprobleem op te lossen. De mensheid bedankt je alvast!
-
-### Queeste opgeven
-
-Mocht je problemen ondervinden met je queeste en wil je liever opnieuw beginnen. Dan kan je jouw queeste stoppen door de juiste poort op te roepen. De score van jouw succesvolle wereldproblemen blijf je behouden.
-
-```
-path: /quest/{teamId}/abandon
-method: POST
-```
+Bedankt voor het deelnemen aan het avontuur met het Collide Space Center! 🌠🛠️

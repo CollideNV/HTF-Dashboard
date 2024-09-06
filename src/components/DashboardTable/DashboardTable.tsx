@@ -15,8 +15,8 @@ import { BadgeType } from "../../types/BadgeType";
 import { Team } from "../../types/Team";
 import DashboardBadge from "../DashboardBadge/DashboardBadge";
 import styles from "./DashboardTable.module.scss";
-import { Tool } from "../../types/Tool";
 import { Problem } from "../../types/Problem";
+import { Mission } from "../../types/Mission";
 
 interface DashboardTableProps {
   "data-testid"?: string;
@@ -53,19 +53,19 @@ const DashboardTable: FC<DashboardTableProps> = ({
     );
   }, [teams]);
 
-  const getBadgeType = (tool: Tool, badgeType: BadgeType): BadgeType => {
-    if (tool.solved == null) return BadgeType.EMPTY_BADGE;
+  const getBadgeType = (mission: Mission, badgeType: BadgeType): BadgeType => {
+    if (mission.solved == null) return BadgeType.EMPTY_BADGE;
 
-    return tool.solved
+    return mission.solved
       ? badgeType === BadgeType.NULL
         ? BadgeType.SUCCESS_BADGE
         : badgeType
       : BadgeType.FAIL_BADGE;
   };
 
-  const renderedBadges = useCallback((tools: Tool[], badgeType: BadgeType) => {
-    const renderBadge = (tool: Tool, badgeType: BadgeType) => {
-      const checked = tool.solved == null;
+  const renderedBadges = useCallback((missions: Mission[], badgeType: BadgeType) => {
+    const renderBadge = (mission: Mission, badgeType: BadgeType) => {
+      const checked = mission.solved == null;
 
       return (
         <>
@@ -86,10 +86,10 @@ const DashboardTable: FC<DashboardTableProps> = ({
             timeout={{ appear: 100, enter: 250, exit: 0 }}
           >
             <span>
-              <DashboardBadge type={getBadgeType(tool, badgeType)} />
+              <DashboardBadge type={getBadgeType(mission, badgeType)} />
             </span>
           </Grow>
-          {tool.solved && (
+          {mission.solved && (
             <Player
               src={lottie.CentralConfetti}
               autoplay
@@ -102,9 +102,9 @@ const DashboardTable: FC<DashboardTableProps> = ({
 
     return (
       <div className={styles.badge_container}>
-        {tools.map((tool, i) => (
+        {missions.map((mission, i) => (
           <div key={i} className={styles.badge}>
-            {renderBadge(tool, badgeType)}
+            {renderBadge(mission, badgeType)}
           </div>
         ))}
       </div>
@@ -124,7 +124,7 @@ const DashboardTable: FC<DashboardTableProps> = ({
           {team.problems.map((problem: Problem, i: number) => {
             return (
               <TableCell key={i} className={styles.badgesCell}>
-                {renderedBadges(problem.tools, problem.badgeUrl)}
+                {renderedBadges(problem.mission, problem.badgeUrl)}
               </TableCell>
             );
           })}

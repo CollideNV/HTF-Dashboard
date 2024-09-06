@@ -18,7 +18,7 @@ const DashboardBadge = ({
 }: DashboardBadgeProps) => {
   const renderBadge = (badgeType: BadgeType) => {
     switch (badgeType) {
-      case BadgeType.WILDLIFE_BADGE:
+      case BadgeType.ALIEN_ENCOUNTER_BADGE:
         return WildLifeBadge;
       case BadgeType.SHELTER_BADGE:
         return ShelterBadge;

@@ -1,5 +1,5 @@
 import { BadgeType } from './BadgeType'
-import { Tool } from './Tool'
+import { Mission } from './Mission'
 
 export interface Problem {
     badgeUrl: BadgeType
@@ -7,5 +7,5 @@ export interface Problem {
     name: string
     score: number
     solved: boolean
-    tools: Tool[]
+    mission: Mission[]
 }

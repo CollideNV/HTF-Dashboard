@@ -17,7 +17,7 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import { Team } from "../../types/Team";
 import { Problem } from "../../types/Problem";
-import { Tool } from "../../types/Tool";
+import { Mission } from "../../types/Mission";
 
 const modalStyle = {
   position: "absolute",
@@ -91,9 +91,9 @@ const DashboardPage: FC = () => {
     (data as Team[]).forEach((team: Team) => {
       let teamScore: number = 0;
       team.problems.forEach((problem: Problem) => {
-        problem.tools.forEach((tool: Tool) => {
-          if (tool.solved === true) {
-            teamScore += tool.difficulty;
+        problem.mission.forEach((mission: Mission) => {
+          if (mission.solved === true) {
+            teamScore += mission.difficulty;
           }
         });
       });
@@ -136,7 +136,7 @@ const DashboardPage: FC = () => {
               className={styles.headerImgIcon}
               alt="Logo"
             />
-            Collide Space Center 🚀
+            Collide Space Center
           </div>
           <div className={styles.countdown}>
             <img
@@ -158,7 +158,7 @@ const DashboardPage: FC = () => {
 
         <Grow timeout={1000}>{renderedBody}</Grow>
         <div>
-          <Button onClick={handleOpen} style={{ color: "#2de188" }}>
+          <Button onClick={handleOpen} style={{ color: "#f98100" }}>
             Open Briefing
           </Button>
           <Modal
