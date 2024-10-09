@@ -117,7 +117,7 @@ const DashboardPage: FC = () => {
               src={lottie.Compass}
               style={{ height: 300 }}
             />
-            <h2>Loading Dashboard</h2>
+            <h2>Loading Dashboard...</h2>
           </div>
         ) : (
           <DashboardTable teams={getFilteredTeams} />

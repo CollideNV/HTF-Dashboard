@@ -116,6 +116,4 @@ Bijdragen aan dit project zijn altijd welkom! Voel je vrij om een pull request i
 4. Push naar de branch (`git push origin feature-branch`)
 5. Open een Pull Request
 
----
-
 Bedankt voor het deelnemen aan het avontuur met het Collide Space Center! 🌠🛠️
