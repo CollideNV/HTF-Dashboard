@@ -103,7 +103,6 @@ Query: teamId=&lt;jouw team ID&gt;
 <li>Push naar de branch (<code>git push origin feature-branch</code>)</li>
 <li>Open een Pull Request</li>
 </ol>
-<hr/>
 <p>Bedankt voor het deelnemen aan het avontuur met het Collide Space Center! 🌠🛠️</p>
 
     </div>
