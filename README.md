@@ -54,7 +54,7 @@ Je applicatie zou nu lokaal moeten draaien!
     Body: {"name": "<jouw team naam>"}
     ```
 
-2. **Start je queeste**: Gebruik je unieke team-ID om een nieuwe queeste te starten.
+2. **Start je quest**: Gebruik je unieke team-ID om een nieuwe quest te starten.
 
     ```bash
     POST /quest
@@ -64,7 +64,7 @@ Je applicatie zou nu lokaal moeten draaien!
 3. **Gebruik tools en los problemen op**: Verken de problemen en gebruik de juiste tools om ze op te lossen. Let op de efficiëntie van elke tool en werk samen met je team om de beste resultaten te behalen.
 
     ```bash
-    GET /problems/{teamId}
+    GET /quest/{teamId}
     POST /use/{toolId}?formula=<jouw oplossing>
     ```
 
@@ -72,7 +72,7 @@ Je applicatie zou nu lokaal moeten draaien!
 
 ## 🌌 API Endpoints
 
-Hier zijn de belangrijkste API endpoints die je nodig hebt om deel te nemen aan de queeste:
+Hier zijn de belangrijkste API endpoints die je nodig hebt om deel te nemen aan de quest:
 
 - **Team Aanmaken**:
   
@@ -81,17 +81,17 @@ Hier zijn de belangrijkste API endpoints die je nodig hebt om deel te nemen aan 
   Body: {"name": "<jouw team naam>"}
   ```
 
-- **Queeste Starten**:
+- **Quest Starten**:
 
   ```http
   POST /quest
   Query: teamId=<jouw team ID>
   ```
 
-- **Problemen Opvragen**:
+- **Quest Opvragen**:
 
   ```http
-  GET /problems/{teamId}
+  GET /quest/{teamId}
   ```
 
 - **Tool Gebruiken**:
@@ -100,7 +100,7 @@ Hier zijn de belangrijkste API endpoints die je nodig hebt om deel te nemen aan 
   POST /use/{toolId}?formula=<jouw oplossing>
   ```
 
-- **Queeste Opgeven**:
+- **Quest Opgeven**:
 
   ```http
   POST /quest/{teamId}/abandon

@@ -48,14 +48,14 @@ Body: {'{'}&quot;name&quot;: &quot;&lt;jouw team naam&gt;&quot;{'}'}
 </code></pre>
 </li>
 <li>
-<p><strong>Start je queeste</strong>: Gebruik je unieke team-ID om een nieuwe queeste te starten.</p>
+<p><strong>Start je quest</strong>: Gebruik je unieke team-ID om een nieuwe quest te starten.</p>
 <pre><code className="language-bash">POST /quest
 Query: teamId=&lt;jouw team ID&gt;
 </code></pre>
 </li>
 <li>
 <p><strong>Gebruik tools en los problemen op</strong>: Verken de problemen en gebruik de juiste tools om ze op te lossen. Let op de efficiëntie van elke tool en werk samen met je team om de beste resultaten te behalen.</p>
-<pre><code className="language-bash">GET /problems/{'{'}teamId{'}'}
+<pre><code className="language-bash">GET /quest/{'{'}teamId{'}'}
 POST /use/{'{'}toolId{'}'}?formula=&lt;jouw oplossing&gt;
 </code></pre>
 </li>
@@ -64,7 +64,7 @@ POST /use/{'{'}toolId{'}'}?formula=&lt;jouw oplossing&gt;
 </li>
 </ol>
 <h2>🌌 API Endpoints</h2>
-<p>Hier zijn de belangrijkste API endpoints die je nodig hebt om deel te nemen aan de queeste:</p>
+<p>Hier zijn de belangrijkste API endpoints die je nodig hebt om deel te nemen aan de quest:</p>
 <ul>
 <li>
 <p><strong>Team Aanmaken</strong>:</p>
@@ -73,14 +73,14 @@ Body: {'{'}&quot;name&quot;: &quot;&lt;jouw team naam&gt;&quot;{'}'}
 </code></pre>
 </li>
 <li>
-<p><strong>Queeste Starten</strong>:</p>
+<p><strong>Quest Starten</strong>:</p>
 <pre><code className="language-http">POST /quest
 Query: teamId=&lt;jouw team ID&gt;
 </code></pre>
 </li>
 <li>
-<p><strong>Problemen Opvragen</strong>:</p>
-<pre><code className="language-http">GET /problems/{'{'}teamId{'}'}
+<p><strong>Quest Opvragen</strong>:</p>
+<pre><code className="language-http">GET /quest/{'{'}teamId{'}'}
 </code></pre>
 </li>
 <li>
@@ -89,7 +89,7 @@ Query: teamId=&lt;jouw team ID&gt;
 </code></pre>
 </li>
 <li>
-<p><strong>Queeste Opgeven</strong>:</p>
+<p><strong>quest Opgeven</strong>:</p>
 <pre><code className="language-http">POST /quest/{'{'}teamId{'}'}/abandon
 </code></pre>
 </li>

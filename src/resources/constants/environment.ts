@@ -11,5 +11,5 @@ export default {
     http: REACT_APP_DASHBOARD_API_URL ?? "https://htf.collide.be",
     websocket: REACT_APP_DASHBOARD_WEBSOCKET_URL ?? "wss://htf.collide.be",
   },
-  deadline: REACT_APP_DEADLINE ?? "2024-11-09T16:00:00",
+  deadline: REACT_APP_DEADLINE ?? "2024-11-19T16:00:00",
 };
