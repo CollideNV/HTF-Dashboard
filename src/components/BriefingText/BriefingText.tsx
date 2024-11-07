@@ -89,7 +89,7 @@ Query: teamId=&lt;jouw team ID&gt;
 </code></pre>
 </li>
 <li>
-<p><strong>quest Opgeven</strong>:</p>
+<p><strong>Quest Opgeven</strong>:</p>
 <pre><code className="language-http">POST /quest/{'{'}teamId{'}'}/abandon
 </code></pre>
 </li>
@@ -98,9 +98,9 @@ Query: teamId=&lt;jouw team ID&gt;
 <p>Bijdragen aan dit project zijn altijd welkom! Voel je vrij om een pull request in te dienen of een issue te openen om suggesties voor verbeteringen te bespreken.</p>
 <ol>
 <li>Fork de repository</li>
-<li>Maak een nieuwe branch (<code>git checkout -b feature-branch</code>)</li>
-<li>Commit je wijzigingen (<code>git commit -m 'Add a new feature'</code>)</li>
-<li>Push naar de branch (<code>git push origin feature-branch</code>)</li>
+<li>Maak een nieuwe branch <code>git checkout -b feature-branch</code></li>
+<li>Commit je wijzigingen <code>git commit -m 'Add a new feature'</code></li>
+<li>Push naar de branch <code>git push origin feature-branch</code></li>
 <li>Open een Pull Request</li>
 </ol>
 <p>Bedankt voor het deelnemen aan het avontuur met het Collide Space Center! Heel veel succes!🌠🛠️</p>
