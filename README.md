@@ -5,11 +5,11 @@ Welkom bij het Collide Space Center! Dit project roept een nieuwe generatie van 
 
 ## 🌠 Over het Project
 
-In dit project werk je samen met je team om vergeten ruimte-tools te ontdekken en wereldproblemen op te lossen. Jullie verkennen de uitgestrekte paden van de kosmos door middel van geavanceerde technologieën, en ontwikkelen nieuwe tools en verbeteringen die de toekomst van ruimteverkenning vormgeven.
+In dit project werk je samen met je team om ruimte-missies te ontdekken en wereldproblemen op te lossen. Jullie verkennen de uitgestrekte paden van de kosmos door middel van geavanceerde technologieën, en ontwikkelen nieuwe tools en verbeteringen die de toekomst van ruimteverkenning vormgeven.
 
 ### Doelstellingen
 
-- Ontdek en gebruik vergeten ruimte-tools om kosmische problemen op te lossen.
+- Ontdek en ga op missie om kosmische problemen op te lossen.
 - Ontwikkel nieuwe technologieën door gebruik te maken van moderne fullstack-technologieën.
 - Werk samen met je team om de beste oplossingen te vinden en badges en punten te verdienen.
 
@@ -50,25 +50,23 @@ Je applicatie zou nu lokaal moeten draaien!
 1. **Maak een team aan**: Bedenk samen met je team een naam en stuur deze via onze API om je team aan te maken. Vergeet niet je unieke team-ID te noteren!
 
     ```bash
-    POST /team
-    Body: {"name": "<jouw team naam>"}
+    POST /team?name="<jouw team naam>"
     ```
 
 2. **Start je quest**: Gebruik je unieke team-ID om een nieuwe quest te starten.
 
     ```bash
-    POST /quest
-    Query: teamId=<jouw team ID>
+    POST /quest?teamId=<jouw team ID>
     ```
 
-3. **Gebruik tools en los problemen op**: Verken de problemen en gebruik de juiste tools om ze op te lossen. Let op de efficiëntie van elke tool en werk samen met je team om de beste resultaten te behalen.
+3. **Ga op missies en los problemen op**: Verken de problemen en gebruik de juiste tools om ze op te lossen. Let op de efficiëntie van elke missie en werk samen met je team om de beste resultaten te behalen.
 
     ```bash
     GET /quest/{teamId}
-    POST /use/{toolId}?formula=<jouw oplossing>
+    POST /use/{missionId}?result=<jouw oplossing>
     ```
 
-4. **Bekijk je voortgang en verdien badges**: Behaal badges en verbeter je score door problemen op te lossen en tools efficiënt te gebruiken.
+4. **Bekijk je voortgang en verdien badges**: Behaal badges en verbeter je score door missies positief te beëindigen en tools efficiënt te gebruiken.
 
 ## 🌌 API Endpoints
 
@@ -77,15 +75,13 @@ Hier zijn de belangrijkste API endpoints die je nodig hebt om deel te nemen aan 
 - **Team Aanmaken**:
   
   ```http
-  POST /team
-  Body: {"name": "<jouw team naam>"}
+  POST /team?name=<jouw team naam>
   ```
 
 - **Quest Starten**:
 
   ```http
-  POST /quest
-  Query: teamId=<jouw team ID>
+  POST /quest?teamId=<jouw team ID>
   ```
 
 - **Quest Opvragen**:
@@ -94,10 +90,10 @@ Hier zijn de belangrijkste API endpoints die je nodig hebt om deel te nemen aan 
   GET /quest/{teamId}
   ```
 
-- **Tool Gebruiken**:
+- **Missies oplossen**:
 
   ```http
-  POST /use/{toolId}?formula=<jouw oplossing>
+  POST /use/{missionId}?result=<jouw oplossing>
   ```
 
 - **Quest Opgeven**:

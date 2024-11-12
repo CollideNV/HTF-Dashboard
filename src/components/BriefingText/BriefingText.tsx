@@ -5,10 +5,10 @@ const BriefingText = () => ( <div className={styles.BriefingText}>
         <h1>🌌 Collide Space Center 🌌</h1>
 <p>Welkom bij het Collide Space Center! Dit project roept een nieuwe generatie van digitale pioniers en kosmische avonturiers op om de mysteries van het universum te ontsluieren en de grenzen van technologie te verleggen. Samen ontwikkelen we nieuwe technologieën en tools om de uitdagingen van de ruimte te overwinnen.</p>
 <h2>🌠 Over het Project</h2>
-<p>In dit project werk je samen met je team om vergeten ruimte-tools te ontdekken en wereldproblemen op te lossen. Jullie verkennen de uitgestrekte paden van de kosmos door middel van geavanceerde technologieën, en ontwikkelen nieuwe tools en verbeteringen die de toekomst van ruimteverkenning vormgeven.</p>
+<p>In dit project werk je samen met je team om ruimte-missies te ontdekken en wereldproblemen op te lossen. Jullie verkennen de uitgestrekte paden van de kosmos door middel van geavanceerde technologieën, ontwikkelen nieuwe tools en verbeteringen die de toekomst van ruimteverkenning vormgeven.</p>
 <h3>Doelstellingen</h3>
 <ul>
-<li>Ontdek en gebruik vergeten ruimte-tools om kosmische problemen op te lossen.</li>
+<li>Ontdek en ga op missie om kosmische problemen op te lossen.</li>
 <li>Ontwikkel nieuwe technologieën door gebruik te maken van moderne fullstack-technologieën.</li>
 <li>Werk samen met je team om de beste oplossingen te vinden en badges en punten te verdienen.</li>
 </ul>
@@ -17,8 +17,8 @@ const BriefingText = () => ( <div className={styles.BriefingText}>
 <ol>
 <li>
 <p><strong>Clone de repository</strong>:</p>
-<pre><code className="language-bash">git clone https://github.com/CollideNV/htf-2024-angular.git
-git clone https://github.com/CollideNV/htf-2024-vue.git
+<pre><code className="language-bash">git clone https://github.com/CollideNV/htf-2024-angular.git<br/>
+git clone https://github.com/CollideNV/htf-2024-vue.git<br/>
 git clone https://github.com/CollideNV/htf-2024-react.git
 </code></pre>
 </li>
@@ -43,24 +43,22 @@ git clone https://github.com/CollideNV/htf-2024-react.git
 <ol>
 <li>
 <p><strong>Maak een team aan</strong>: Bedenk samen met je team een naam en stuur deze via onze API om je team aan te maken. Vergeet niet je unieke team-ID te noteren!</p>
-<pre><code className="language-bash">POST /team
-Body: {'{'}&quot;name&quot;: &quot;&lt;jouw team naam&gt;&quot;{'}'}
+<pre><code className="language-bash">POST /team?name=&lt;jouw team naam&gt;
 </code></pre>
 </li>
 <li>
 <p><strong>Start je quest</strong>: Gebruik je unieke team-ID om een nieuwe quest te starten.</p>
-<pre><code className="language-bash">POST /quest
-Query: teamId=&lt;jouw team ID&gt;
+<pre><code className="language-bash">POST /quest?teamId=&lt;jouw team ID&gt;
 </code></pre>
 </li>
 <li>
-<p><strong>Gebruik tools en los problemen op</strong>: Verken de problemen en gebruik de juiste tools om ze op te lossen. Let op de efficiëntie van elke tool en werk samen met je team om de beste resultaten te behalen.</p>
-<pre><code className="language-bash">GET /quest/{'{'}teamId{'}'}
-POST /use/{'{'}toolId{'}'}?formula=&lt;jouw oplossing&gt;
+<p><strong>Ga op missies en los problemen op</strong>: Verken de problemen en gebruik de juiste tools om ze op te lossen. Let op de efficiëntie van elke missie en werk samen met je team om de beste resultaten te behalen.</p>
+<pre><code className="language-bash">GET /quest/{'{'}teamId{'}'}<br/>
+POST /use/{'{'}missionId{'}'}?result=&lt;jouw oplossing&gt;
 </code></pre>
 </li>
 <li>
-<p><strong>Bekijk je voortgang en verdien badges</strong>: Behaal badges en verbeter je score door problemen op te lossen en tools efficiënt te gebruiken.</p>
+<p><strong>Bekijk je voortgang en verdien badges</strong>: Behaal badges en verbeter je score door missies positief te beëindigen en tools efficiënt te gebruiken.</p>
 </li>
 </ol>
 <h2>🌌 API Endpoints</h2>
@@ -68,14 +66,12 @@ POST /use/{'{'}toolId{'}'}?formula=&lt;jouw oplossing&gt;
 <ul>
 <li>
 <p><strong>Team Aanmaken</strong>:</p>
-<pre><code className="language-http">POST /team
-Body: {'{'}&quot;name&quot;: &quot;&lt;jouw team naam&gt;&quot;{'}'}
+<pre><code className="language-http">POST /team?name=&lt;jouw team naam&gt;
 </code></pre>
 </li>
 <li>
 <p><strong>Quest Starten</strong>:</p>
-<pre><code className="language-http">POST /quest
-Query: teamId=&lt;jouw team ID&gt;
+<pre><code className="language-http">POST /quest?teamId=&lt;jouw team ID&gt;
 </code></pre>
 </li>
 <li>
@@ -84,8 +80,8 @@ Query: teamId=&lt;jouw team ID&gt;
 </code></pre>
 </li>
 <li>
-<p><strong>Tool Gebruiken</strong>:</p>
-<pre><code className="language-http">POST /use/{'{'}toolId{'}'}?formula=&lt;jouw oplossing&gt;
+<p><strong>Missies oplossen</strong>:</p>
+<pre><code className="language-http">POST /use/{'{'}missionId{'}'}?result=&lt;jouw oplossing&gt;
 </code></pre>
 </li>
 <li>
