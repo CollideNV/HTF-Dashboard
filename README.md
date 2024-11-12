@@ -20,9 +20,9 @@ Volg de onderstaande stappen om het project lokaal op je machine te installeren:
 1. **Clone de repository**:
 
     ```bash
-    git clone https://github.com/CollideNV/htf-2024-angular.git
-    git clone https://github.com/CollideNV/htf-2024-vue.git
-    git clone https://github.com/CollideNV/htf-2024-react.git
+    git clone https://github.com/CollideNV/htf-angular.git
+    git clone https://github.com/CollideNV/htf-vue.git
+    git clone https://github.com/CollideNV/htf-react.git
     ```
 
 2. **Navigeer naar de gewenste projectmap**:

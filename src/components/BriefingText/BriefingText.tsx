@@ -17,9 +17,9 @@ const BriefingText = () => ( <div className={styles.BriefingText}>
 <ol>
 <li>
 <p><strong>Clone de repository</strong>:</p>
-<pre><code className="language-bash">git clone https://github.com/CollideNV/htf-2024-angular.git<br/>
-git clone https://github.com/CollideNV/htf-2024-vue.git<br/>
-git clone https://github.com/CollideNV/htf-2024-react.git
+<pre><code className="language-bash">git clone https://github.com/CollideNV/htf-angular.git<br/>
+git clone https://github.com/CollideNV/htf-vue.git<br/>
+git clone https://github.com/CollideNV/htf-react.git
 </code></pre>
 </li>
 <li>
