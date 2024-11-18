@@ -28,7 +28,7 @@ Volg de onderstaande stappen om het project lokaal op je machine te installeren:
 2. **Navigeer naar de gewenste projectmap**:
 
     ```bash
-    cd htf-2024-angular  # of htf-2024-vue of htf-2024-react
+    cd htf-angular  # of htf-vue of htf-react
     ```
 
 3. **Installeer de afhankelijkheden**:
