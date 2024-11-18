@@ -24,7 +24,7 @@ git clone https://github.com/CollideNV/htf-react.git
 </li>
 <li>
 <p><strong>Navigeer naar de gewenste projectmap</strong>:</p>
-<pre><code className="language-bash">cd htf-2024-angular  # of htf-2024-vue of htf-2024-react
+<pre><code className="language-bash">cd htf-angular  # of htf-vue of htf-react
 </code></pre>
 </li>
 <li>
