@@ -5,8 +5,14 @@ module.exports = {
     extend: {
       animation: {
         'fade-in-slide-up': 'fade-in-slide-up 0.5s ease-out forwards',
+        'blink': 'blink 1s linear infinite',
       },
       keyframes: {
+        'blink': {
+          '50%': {
+            opacity: 0,
+          }
+        },
         'fade-in-slide-up': {
           '0%': {
             opacity: '0',

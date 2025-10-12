@@ -1,12 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 
 const getDeadline = () => {
-  const today = new Date();
-  today.setHours(Number(process.env.REACT_APP_DEADLINE_HOUR) || 16, 0, 0, 0); 
-  if (today < new Date()) {
-    today.setDate(today.getDate() + 1);
-  }
-  return today;
+  const deadlineDate = process.env.REACT_APP_DEADLINE_DATE || "2025-11-12T16:00:00";
+  return new Date(deadlineDate);
 };
 
 const useTime = () => {

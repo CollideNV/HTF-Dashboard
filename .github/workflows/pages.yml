@@ -33,7 +33,7 @@ jobs:
         run: yarn build
         env:
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-          REACT_APP_DEADLINE_HOUR: ${{ secrets.REACT_APP_DEADLINE_HOUR }}
+          REACT_APP_DEADLINE_DATE: ${{ secrets.REACT_APP_DEADLINE_DATE }}
           REACT_APP_WS_URL: ${{ secrets.REACT_APP_WS_URL }}
           REACT_APP_HTF_TOTAL_TEAMS: ${{ secrets.REACT_APP_HTF_TOTAL_TEAMS }}
       - name: Setup Pages

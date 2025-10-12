@@ -1,6 +1,6 @@
-import React from 'react';
-import { BookOpen, ListTodo, AlertTriangle } from 'lucide-react';
-import logo from '../assets/images/logo.png';
+import React from "react";
+import { BookOpen, ListTodo, AlertTriangle } from "lucide-react";
+import logo from "../assets/images/logo.png";
 
 interface HeaderProps {
   isCompactView: boolean;
@@ -55,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({
         >
           <ListTodo className="w-5 h-5" />
           <span className="text-sm">
-            {isCompactView ? 'SHOW DASHBOARD' : 'COMPACT VIEW'}
+            {isCompactView ? "SHOW DASHBOARD" : "COMPACT VIEW"}
           </span>
         </button>
       </div>
@@ -65,16 +65,22 @@ const Header: React.FC<HeaderProps> = ({
         <div
           className={`flex items-center space-x-2 px-4 py-2 rounded border font-mono ${
             timeLeft < 2 * 60 * 60 * 1000
-              ? 'border-red-500 bg-red-500/20 text-red-300'
+              ? "border-red-500 bg-red-500/20 text-red-300"
               : timeLeft < 4 * 60 * 60 * 1000
-              ? 'border-yellow-500 bg-yellow-500/20 text-yellow-300'
-              : 'border-green-500 bg-green-500/20 text-green-300'
+              ? "border-yellow-500 bg-yellow-500/20 text-yellow-300"
+              : "border-green-500 bg-green-500/20 text-green-300"
           }`}
         >
           <AlertTriangle className="w-5 h-5" />
           <div>
             <div className="text-xs opacity-70">MISSION DEADLINE</div>
-            <div className="text-xl font-bold">{formatTimeLeft(timeLeft)}</div>
+            <div
+              className={`text-xl font-bold ${
+                timeLeft > 0 && timeLeft < 60 * 1000 ? "animate-blink" : ""
+              }`}
+            >
+              {timeLeft < 0 ? "DEADLINE PASSED" : formatTimeLeft(timeLeft)}
+            </div>
           </div>
         </div>
       )}
