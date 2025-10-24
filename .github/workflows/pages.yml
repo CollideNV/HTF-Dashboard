@@ -36,6 +36,8 @@ jobs:
           REACT_APP_DEADLINE_DATE: ${{ secrets.REACT_APP_DEADLINE_DATE }}
           REACT_APP_WS_URL: ${{ secrets.REACT_APP_WS_URL }}
           REACT_APP_HTF_TOTAL_TEAMS: ${{ secrets.REACT_APP_HTF_TOTAL_TEAMS }}
+          REACT_APP_AUTH_USERNAME: ${{ secrets.REACT_APP_AUTH_USERNAME }}
+          REACT_APP_AUTH_PASSWORD: ${{ secrets.REACT_APP_AUTH_PASSWORD }}
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact

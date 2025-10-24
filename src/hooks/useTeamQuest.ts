@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface Mission {
   id: string;
@@ -39,11 +40,10 @@ export const useTeamQuest = (teamId: string | null) => {
     const fetchTeamQuest = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/teams/${teamId}/quest`
         );
-        const data = await response.json();
-        setQuest(data);
+        setQuest(response.data);
       } catch (error) {
         console.error("Failed to fetch team quest data", error);
         setQuest(null);

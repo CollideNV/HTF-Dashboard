@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 interface Team {
   id: string;
@@ -15,27 +16,26 @@ const Backoffice: React.FC = () => {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        // For testing the endpoint requires Basic Auth: localUser / localPassword
-        const credentials = btoa('localUser:localPassword');
-        const response = await fetch('https://htf.collide.be/teams', {
+        // For testing the endpoint requires Basic Auth
+        const username = process.env.REACT_APP_AUTH_USERNAME || 'localUser';
+        const password = process.env.REACT_APP_AUTH_PASSWORD || 'localPassword';
+        const credentials = btoa(`${username}:${password}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL!}/teams`, {
           headers: {
             Authorization: `Basic ${credentials}`,
             'Content-Type': 'application/json',
           },
         });
 
-        if (response.status === 401 || response.status === 403) {
-          throw new Error('Authentication failed when fetching teams');
-        }
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch teams');
-        }
-
-        const data = await response.json();
-        setTeams(data);
+        setTeams(response.data);
       } catch (err) {
-        if (err instanceof Error) {
+        if (axios.isAxiosError(err)) {
+          if (err.response?.status === 401 || err.response?.status === 403) {
+            setError('Authentication failed when fetching teams');
+          } else {
+            setError(err.message);
+          }
+        } else if (err instanceof Error) {
           setError(err.message);
         } else {
           setError('An unknown error occurred');

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import axios from "axios";
 
 interface Mission {
   type: string;
@@ -44,15 +45,10 @@ const useTeams = () => {
     // --- Helper: Fetch teams from REST API ---
     const fetchTeams = async () => {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `${process.env.REACT_APP_API_URL!}/dashboard`
         );
-        if (!response.ok) {
-          throw new Error(
-            `Network response was not ok: ${response.statusText}`
-          );
-        }
-        const data: ApiTeam[] = await response.json();
+        const data: ApiTeam[] = response.data;
 
         const transformedTeams: Team[] = data.map((team, index) => {
           const activeMission = team.problems
