@@ -10,7 +10,6 @@ import BriefingPanel from "./components/BriefingPanel";
 import SensorGrid from "./components/SensorGrid";
 import MissionStatus from "./components/MissionStatus";
 import Backoffice from "./components/Backoffice";
-import PrivateRoute from "./components/PrivateRoute";
 
 const Dashboard = () => {
   const { time, timeLeft, formatTimeLeft } = useTime();
@@ -106,11 +105,7 @@ const App = () => {
         <Route path="/" element={<Dashboard />} />
         <Route
           path="/backoffice"
-          element={
-            <PrivateRoute>
-              <Backoffice />
-            </PrivateRoute>
-          }
+          element={<Backoffice />}
         />
       </Routes>
     </Router>

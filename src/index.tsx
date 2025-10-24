@@ -3,28 +3,12 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { ReactKeycloakProvider } from "@react-keycloak/web";
-import createKeycloak from "./keycloak";
 
 const container = document.getElementById("root");
 if (container) {
   const root = ReactDOM.createRoot(container);
   root.render(
-    <ReactKeycloakProvider
-      authClient={createKeycloak()}
-      initOptions={{
-        onLoad: "check-sso",
-        checkLoginIframe: false,
-      }}
-      onEvent={(event, error) => {
-        console.log("[keycloak event]", event, error || "");
-      }}
-      onTokens={(tokens) => {
-        console.log("[keycloak tokens]", tokens);
-      }}
-    >
-      <App />
-    </ReactKeycloakProvider>
+    <App />
   );
 }
 
