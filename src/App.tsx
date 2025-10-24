@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import useTime from "./hooks/useTime";
 import useMarineLife from "./hooks/useMarineLife";
 import useTeams from "./hooks/useTeams";
@@ -8,8 +9,10 @@ import Header from "./components/Header";
 import BriefingPanel from "./components/BriefingPanel";
 import SensorGrid from "./components/SensorGrid";
 import MissionStatus from "./components/MissionStatus";
+import Backoffice from "./components/Backoffice";
+import PrivateRoute from "./components/PrivateRoute";
 
-const HTFDashboard = () => {
+const Dashboard = () => {
   const { time, timeLeft, formatTimeLeft } = useTime();
   const { teams, apiError, isLoading } = useTeams();
   const { fish, bubbles } = useMarineLife();
@@ -96,4 +99,22 @@ const HTFDashboard = () => {
   );
 };
 
-export default HTFDashboard;
+const App = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route
+          path="/backoffice"
+          element={
+            <PrivateRoute>
+              <Backoffice />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;

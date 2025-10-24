@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+  </head>
+  <body>
+    <script>
+      // keycloak-js expects to communicate with this frame via postMessage,
+      // so we keep it minimal and allow the script to forward messages.
+      window.addEventListener('message', (e) => {
+        // just forward messages to parent - keycloak-js will handle the handshake
+        parent.postMessage(e.data, e.origin);
+      }, false);
+    </script>
+    <div>silent check</div>
+  </body>
+</html>

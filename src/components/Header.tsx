@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({
             <img src={logo} alt="Aquatech Mission Logo" className="h-12" />
             <div className="text-cyan-400 font-mono">
               <div className="text-xs opacity-70">SUBMARINE OS v3.21</div>
-              <div className="text-lg font-bold">AQUATECH MISSION 250</div>
+              <div className="text-lg font-bold">AQUATECH MISSION 104</div>
             </div>
             <div className="w-px h-12 bg-cyan-500/30" />
             <div className="text-cyan-300 font-mono">
