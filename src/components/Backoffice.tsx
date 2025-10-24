@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { QRCodeCanvas } from 'qrcode.react';
 import { AlertTriangle, Download, X } from 'lucide-react';
@@ -10,12 +10,18 @@ interface Team {
   users?: { id: string }[];
 }
 
+interface CustomWebSocket extends WebSocket {
+  _pingInterval?: NodeJS.Timeout;
+}
+
 const Backoffice: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [wsConnected, setWsConnected] = useState(false);
+  const ws = useRef<CustomWebSocket | null>(null);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -32,6 +38,7 @@ const Backoffice: React.FC = () => {
         });
 
         setTeams(response.data);
+        setError(null);
       } catch (err) {
         if (axios.isAxiosError(err)) {
           if (err.response?.status === 401 || err.response?.status === 403) {
@@ -50,6 +57,84 @@ const Backoffice: React.FC = () => {
     };
 
     fetchTeams();
+
+    // --- WebSocket Connection ---
+    const connectWebSocket = () => {
+      try {
+        const wsUrl = process.env.REACT_APP_WS_URL!;
+        const socket: CustomWebSocket = new WebSocket(wsUrl);
+        ws.current = socket;
+
+        socket.onopen = () => {
+          console.log('[WS] Connected to teams endpoint');
+          setWsConnected(true);
+          setError(null);
+
+          // Send ping every 30 seconds to keep connection alive
+          socket._pingInterval = setInterval(() => {
+            if (socket.readyState === WebSocket.OPEN) {
+              socket.send('ping');
+            }
+          }, 30000);
+        };
+
+        socket.onmessage = (event) => {
+          const message = event.data;
+
+          // Ignore pong responses
+          if (message === 'pong') return;
+
+          // Handle update signal
+          if (message === 'update-dashboard') {
+            console.log('[WS] Update signal received — refetching teams...');
+            fetchTeams();
+            return;
+          }
+
+          // Try to parse as JSON for direct team data
+          try {
+            const data = JSON.parse(message);
+            if (Array.isArray(data)) {
+              setTeams(data);
+              console.log('[WS] Teams updated:', data.length, 'teams');
+            }
+          } catch (err) {
+            console.warn('[WS] Non-JSON message:', message);
+          }
+        };
+
+        socket.onerror = (error) => {
+          console.error('[WS] Error:', error);
+          setWsConnected(false);
+          setError('WebSocket connection error. Retrying...');
+        };
+
+        socket.onclose = (e) => {
+          console.warn(`[WS] Closed (${e.code}). Reconnecting in 5s...`);
+          setWsConnected(false);
+          if (socket._pingInterval) {
+            clearInterval(socket._pingInterval);
+          }
+          // Attempt to reconnect after 5 seconds
+          setTimeout(connectWebSocket, 5000);
+        };
+      } catch (err) {
+        console.error('[WS] Connection setup error:', err);
+        // If WebSocket is not available, just use REST API
+        setWsConnected(false);
+      }
+    };
+
+    connectWebSocket();
+
+    return () => {
+      if (ws.current) {
+        if (ws.current._pingInterval) {
+          clearInterval(ws.current._pingInterval);
+        }
+        ws.current.close();
+      }
+    };
   }, []);
 
   const downloadQRCode = () => {
@@ -143,10 +228,14 @@ const Backoffice: React.FC = () => {
               <h1 className="text-3xl font-mono font-bold text-cyan-400 mb-1">
                 TEAM RECONNAISSANCE
               </h1>
-              <p className="text-cyan-300 font-mono text-sm">
-                <span className="text-green-400 animate-pulse">● </span>
-                LIVE TRACKING - {teams.length} TEAMS ONLINE
-              </p>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full animate-pulse ${wsConnected ? 'bg-green-400' : 'bg-red-400'}`} />
+                  <span className="text-cyan-300 font-mono text-sm">
+                    {wsConnected ? 'LIVE TRACKING' : 'POLLING MODE'}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
