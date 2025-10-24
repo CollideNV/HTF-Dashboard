@@ -13,7 +13,7 @@ if (container) {
     <ReactKeycloakProvider
       authClient={createKeycloak()}
       initOptions={{
-        onLoad: "login-required",
+        onLoad: "check-sso",
         checkLoginIframe: false,
       }}
       onEvent={(event, error) => {
