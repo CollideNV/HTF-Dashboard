@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import useTime from "./hooks/useTime";
 import useMarineLife from "./hooks/useMarineLife";
 import useTeams from "./hooks/useTeams";
