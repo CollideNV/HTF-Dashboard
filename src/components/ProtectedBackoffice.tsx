@@ -20,7 +20,6 @@ const RequireAuth: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    // Brief placeholder while redirecting to Keycloak
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-cyan-400 font-mono">
         Redirecting to login{error ? `: ${error}` : '...'}
