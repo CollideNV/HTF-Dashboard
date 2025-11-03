@@ -6,7 +6,6 @@ const RequireAuth: React.FC = () => {
   const { isAuthenticated, isLoading, login, error } = useAuth();
 
   useEffect(() => {
-    // When auth state is known and user is not authenticated, trigger Keycloak login
     if (!isLoading && !isAuthenticated) {
       login();
     }
