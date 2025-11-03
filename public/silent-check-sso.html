@@ -2,16 +2,18 @@
 <html>
   <head>
     <meta charset="utf-8"/>
+    <title>Silent Check SSO</title>
   </head>
   <body>
     <script>
-      // keycloak-js expects to communicate with this frame via postMessage,
-      // so we keep it minimal and allow the script to forward messages.
-      window.addEventListener('message', (e) => {
-        // just forward messages to parent - keycloak-js will handle the handshake
-        parent.postMessage(e.data, e.origin);
-      }, false);
+      // This file is used by keycloak-js for silent SSO checks via an iframe.
+      // It must post its own URL back to the parent window to complete the handshake.
+      try {
+        parent.postMessage(location.href, location.origin);
+      } catch (e) {
+        // Best-effort fallback: post to '*'. Keycloak validates origin internally.
+        parent.postMessage(location.href, '*');
+      }
     </script>
-    <div>silent check</div>
   </body>
-</html>
+  </html>

@@ -1,17 +1,31 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { QRCodeCanvas } from 'qrcode.react';
 import { AlertTriangle, Download, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface Team {
   id: string;
   name: string;
   score: number;
   users?: { id: string }[];
+  isTest?: boolean;
 }
 
-interface CustomWebSocket extends WebSocket {
-  _pingInterval?: NodeJS.Timeout;
+// Message formats from the WebSocket API
+interface TeamScore {
+  teamId: string;
+  teamName: string;
+  score: number;
+  questsCompleted?: number;
+  rank?: number;
+  lastUpdated?: string;
+}
+
+interface ScoreboardUpdateMessage {
+  type: 'SCOREBOARD_UPDATE';
+  data: TeamScore[];
+  timestamp: string; // ISO 8601
 }
 
 const Backoffice: React.FC = () => {
@@ -21,121 +35,157 @@ const Backoffice: React.FC = () => {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [wsConnected, setWsConnected] = useState(false);
-  const ws = useRef<CustomWebSocket | null>(null);
+  const [showTestTeams, setShowTestTeams] = useState(false);
+  const { token, isAuthenticated } = useAuth();
+  const ws = useRef<WebSocket | null>(null);
+  const reconnectAttempts = useRef(0);
+  const reconnectTimerId = useRef<number | null>(null);
 
-  useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        // For testing the endpoint requires Basic Auth
-        const username = process.env.REACT_APP_AUTH_USERNAME || 'localUser';
-        const password = process.env.REACT_APP_AUTH_PASSWORD || 'localPassword';
-        const credentials = btoa(`${username}:${password}`);
-        const response = await axios.get(`${process.env.REACT_APP_API_URL!}/teams`, {
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        setTeams(response.data);
-        setError(null);
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          if (err.response?.status === 401 || err.response?.status === 403) {
-            setError('Authentication failed when fetching teams');
-          } else {
-            setError(err.message);
-          }
-        } else if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('An unknown error occurred');
-        }
-      } finally {
+  // --- Helper: Fetch teams from REST API ---
+  const fetchTeams = useCallback(async () => {
+    try {
+      if (!token) {
+        setError('Not authenticated. Please login with Keycloak.');
         setLoading(false);
+        return;
       }
-    };
 
-    fetchTeams();
+      const response = await axios.get(`${process.env.REACT_APP_API_URL!}/teams`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    // --- WebSocket Connection ---
-    const connectWebSocket = () => {
-      try {
-        const wsUrl = process.env.REACT_APP_WS_URL!;
-        const socket: CustomWebSocket = new WebSocket(wsUrl);
-        ws.current = socket;
+      setTeams(response.data);
+      setError(null);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          setError('Authentication failed when fetching teams');
+        } else {
+          setError(err.message);
+        }
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
-        socket.onopen = () => {
-          console.log('[WS] Connected to teams endpoint');
-          setWsConnected(true);
-          setError(null);
+  // --- WebSocket Connection ---
+  const connectWebSocket = useCallback(() => {
+    const wsUrl = process.env.REACT_APP_WEBSOCKET_URL;
 
-          // Send ping every 30 seconds to keep connection alive
-          socket._pingInterval = setInterval(() => {
-            if (socket.readyState === WebSocket.OPEN) {
-              socket.send('ping');
-            }
-          }, 30000);
-        };
+    if (!wsUrl) {
+      console.error('[WS] Missing REACT_APP_WEBSOCKET_URL environment variable.');
+      setError('WebSocket URL not configured. Set REACT_APP_WEBSOCKET_URL in your .env file.');
+      setWsConnected(false);
+      return;
+    }
 
-        socket.onmessage = (event) => {
-          const message = event.data;
+    try {
+      const socket = new WebSocket(wsUrl);
+      ws.current = socket;
 
-          // Ignore pong responses
-          if (message === 'pong') return;
+      socket.onopen = () => {
+        console.log('[WS] Connected to scoreboard endpoint');
+        setWsConnected(true);
+        setError(null);
+        // Reset exponential backoff on successful connection
+        reconnectAttempts.current = 0;
+      };
 
-          // Handle update signal
-          if (message === 'update-dashboard') {
-            console.log('[WS] Update signal received — refetching teams...');
-            fetchTeams();
+      socket.onmessage = (event) => {
+        const raw = event.data;
+
+        // Backwards-compat: if backend ever sends a simple signal
+        if (raw === 'update-dashboard') {
+          console.log('[WS] Update signal received — refetching teams via REST...');
+          fetchTeams();
+          return;
+        }
+
+        try {
+          const msg: unknown = JSON.parse(raw);
+
+          // Handle documented message format
+          const maybeScoreboard = msg as Partial<ScoreboardUpdateMessage>;
+          if (maybeScoreboard && maybeScoreboard.type === 'SCOREBOARD_UPDATE' && Array.isArray(maybeScoreboard.data)) {
+            const mapped: Team[] = maybeScoreboard.data.map((t) => ({
+              id: t.teamId,
+              name: t.teamName,
+              score: t.score,
+            }));
+            setTeams(mapped);
             return;
           }
 
-          // Try to parse as JSON for direct team data
-          try {
-            const data = JSON.parse(message);
-            if (Array.isArray(data)) {
-              setTeams(data);
-              console.log('[WS] Teams updated:', data.length, 'teams');
-            }
-          } catch (err) {
-            console.warn('[WS] Non-JSON message:', message);
+          // Legacy fallback: if server ever sends plain array of teams
+          if (Array.isArray(msg)) {
+            setTeams(msg as Team[]);
+            return;
           }
-        };
 
-        socket.onerror = (error) => {
-          console.error('[WS] Error:', error);
-          setWsConnected(false);
-          setError('WebSocket connection error. Retrying...');
-        };
+          console.warn('[WS] Unrecognized message format:', msg);
+        } catch (err) {
+          console.error('[WS] Failed to parse message:', err);
+        }
+      };
 
-        socket.onclose = (e) => {
-          console.warn(`[WS] Closed (${e.code}). Reconnecting in 5s...`);
-          setWsConnected(false);
-          if (socket._pingInterval) {
-            clearInterval(socket._pingInterval);
-          }
-          // Attempt to reconnect after 5 seconds
-          setTimeout(connectWebSocket, 5000);
-        };
-      } catch (err) {
-        console.error('[WS] Connection setup error:', err);
-        // If WebSocket is not available, just use REST API
+      socket.onerror = (event) => {
+        console.error('[WS] Error event:', event);
         setWsConnected(false);
-      }
-    };
+        setError('WebSocket connection error. Retrying...');
+      };
 
-    connectWebSocket();
+      socket.onclose = (e) => {
+        setWsConnected(false);
+        const code = e.code;
+        const reason = e.reason || 'No reason provided';
+        console.warn(`[WS] Closed: code=${code}, reason=${reason}`);
+
+        // Clear any pending reconnect timer to avoid duplicates
+        if (reconnectTimerId.current) {
+          window.clearTimeout(reconnectTimerId.current);
+          reconnectTimerId.current = null;
+        }
+
+        // Exponential backoff with cap 30s
+        const baseDelay = 1000; // 1s
+        const attempt = reconnectAttempts.current;
+        const delay = Math.min(baseDelay * Math.pow(2, attempt), 30000);
+        console.log(`[WS] Reconnecting in ${delay}ms (attempt ${attempt + 1})...`);
+
+        reconnectTimerId.current = window.setTimeout(() => {
+          reconnectAttempts.current = attempt + 1;
+          connectWebSocket();
+        }, delay);
+      };
+    } catch (err) {
+      console.error('[WS] Connection setup error:', err);
+      setWsConnected(false);
+      setError('WebSocket initialization failed. Check the endpoint URL.');
+    }
+  }, [fetchTeams]);
+
+  useEffect(() => {
+    fetchTeams(); // Initial REST load
+    connectWebSocket(); // Live updates
 
     return () => {
       if (ws.current) {
-        if (ws.current._pingInterval) {
-          clearInterval(ws.current._pingInterval);
-        }
         ws.current.close();
       }
+      if (reconnectTimerId.current) {
+        window.clearTimeout(reconnectTimerId.current);
+      }
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   const downloadQRCode = () => {
     if (!selectedTeam) return;
@@ -149,10 +199,12 @@ const Backoffice: React.FC = () => {
     }
   };
 
-  const filteredTeams = teams.filter(team =>
-    team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    team.id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTeams = teams.filter(team => {
+    const matchesSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      team.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesTestFilter = showTestTeams || !team.isTest;
+    return matchesSearch && matchesTestFilter;
+  });
 
   if (loading) {
     return (
@@ -240,7 +292,7 @@ const Backoffice: React.FC = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="relative max-w-md">
+          <div className="relative max-w-md mb-4">
             <input
               type="text"
               placeholder="SEARCH BY TEAM NAME OR ID..."
@@ -256,6 +308,20 @@ const Backoffice: React.FC = () => {
                 ✕
               </button>
             )}
+          </div>
+
+          {/* Test Teams Toggle */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowTestTeams(!showTestTeams)}
+              className={`px-3 py-1 rounded-lg font-mono text-xs transition-all duration-200 border ${
+                showTestTeams
+                  ? 'bg-yellow-500/20 border-yellow-500/50 text-yellow-300'
+                  : 'bg-black/50 border-yellow-500/30 text-yellow-400 opacity-60'
+              }`}
+            >
+              {showTestTeams ? '✓' : '○'} SHOW TEST TEAMS
+            </button>
           </div>
         </div>
 
@@ -304,15 +370,27 @@ const Backoffice: React.FC = () => {
             filteredTeams.map((team, index) => (
               <div
                 key={team.id}
-                className="bg-black/70 backdrop-blur-md border border-cyan-500/30 rounded-lg p-4 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 group"
+                className={`bg-black/70 backdrop-blur-md rounded-lg p-4 transition-all duration-300 group ${
+                  team.isTest
+                    ? 'border border-yellow-500/50 hover:border-yellow-400/50 hover:shadow-lg hover:shadow-yellow-500/10'
+                    : 'border border-cyan-500/30 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/10'
+                }`}
               >
                 {/* Card Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-mono text-sm font-bold">
+                    <div className={`w-8 h-8 rounded border flex items-center justify-center font-mono text-sm font-bold ${
+                      team.isTest
+                        ? 'border-yellow-500/50 text-yellow-400'
+                        : 'border-cyan-500/50 text-cyan-400'
+                    }`}>
                       {index + 1}
                     </div>
-                    <h3 className="text-sm font-mono font-bold text-white group-hover:text-cyan-400 transition-colors">
+                    <h3 className={`text-sm font-mono font-bold transition-colors ${
+                      team.isTest
+                        ? 'text-white group-hover:text-yellow-400'
+                        : 'text-white group-hover:text-cyan-400'
+                    }`}>
                       {team.name}
                     </h3>
                   </div>
@@ -322,7 +400,7 @@ const Backoffice: React.FC = () => {
                 <div className="mb-4">
                   <p className="text-cyan-400 text-xs font-mono opacity-70 mb-1">SCORE</p>
                   <div className="bg-black/50 border border-green-500/30 rounded-lg p-3">
-                    <p className="text-2xl font-mono text-green-400 font-bold">{team.score.toLocaleString()}</p>
+                    <p className="text-2xl font-mono text-green-400 font-bold">{team.score !== undefined ? team.score.toLocaleString() : '0'}</p>
                   </div>
                 </div>
 

@@ -9,7 +9,7 @@ import Header from "./components/Header";
 import BriefingPanel from "./components/BriefingPanel";
 import SensorGrid from "./components/SensorGrid";
 import MissionStatus from "./components/MissionStatus";
-import Backoffice from "./components/Backoffice";
+import ProtectedBackoffice from "./components/ProtectedBackoffice";
 
 const Dashboard = () => {
   const { time, timeLeft, formatTimeLeft } = useTime();
@@ -103,10 +103,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route
-          path="/backoffice"
-          element={<Backoffice />}
-        />
+        <Route path="/backoffice" element={<ProtectedBackoffice />} />
       </Routes>
     </Router>
   );

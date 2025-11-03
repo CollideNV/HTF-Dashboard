@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
+interface AppliedEffect {
+  effectType: string;
+  totalValue: number;
+}
+
 interface Mission {
   type: string;
   difficulty: number;
@@ -13,8 +18,10 @@ interface Problem {
 }
 
 interface ApiTeam {
+  teamId?: string;
   name: string;
   score: number;
+  appliedEffects: AppliedEffect[];
   problems: Problem[];
 }
 
@@ -29,138 +36,126 @@ export interface Team {
     difficulty: number;
     remainingAttempts: number;
   } | null;
+  appliedEffects: AppliedEffect[];
 }
 
-interface CustomWebSocket extends WebSocket {
-  _pingInterval?: NodeJS.Timeout;
+interface ScoreboardUpdateMessage {
+  type: "SCOREBOARD_UPDATE";
+  teams: ApiTeam[];
+  timestamp: string;
 }
 
 const useTeams = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const ws = useRef<CustomWebSocket | null>(null);
+  const ws = useRef<WebSocket | null>(null);
+  const reconnectAttempts = useRef(0);
 
-  useEffect(() => {
-    // --- Helper: Fetch teams from REST API ---
-    const fetchTeams = async () => {
+  // --- Helper: Transform API data into Team[] ---
+  const transformTeams = (data: ApiTeam[]): Team[] =>
+    data.map((team, index) => {
+      const activeMission = team.problems
+        ?.flatMap((p) => p.mission)
+        .find((m) => m.solved === null);
+
+      return {
+        id: index + 1,
+        name: team.name,
+        score: team.score,
+        members: 2 + Math.floor(Math.random() * 3),
+        problems: team.problems,
+        activeMission: activeMission
+          ? {
+              type: activeMission.type,
+              difficulty: activeMission.difficulty,
+              remainingAttempts: activeMission.remainingAttempts,
+            }
+          : null,
+        appliedEffects: team.appliedEffects,
+      };
+    });
+
+  // --- Helper: Fetch teams from REST API ---
+  const fetchTeams = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL!}/dashboard`
+      );
+      const data: ApiTeam[] = response.data;
+      setTeams(transformTeams(data));
+      setApiError(null);
+    } catch (error) {
+      console.error("Error fetching teams:", error);
+      setApiError(
+        "CRITICAL ERROR: Submarine OS connection to surface command lost. Retrying..."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // --- WebSocket Connection ---
+  const connectWebSocket = () => {
+    const endpoint = process.env.REACT_APP_WEBSOCKET_URL!;
+    const socket = new WebSocket(endpoint);
+    ws.current = socket;
+
+    socket.onopen = () => {
+      console.log("[WS] Connected to scoreboard");
+      setApiError(null);
+      reconnectAttempts.current = 0; // Reset reconnection attempts
+    };
+
+    socket.onmessage = (event) => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL!}/dashboard`
-        );
-        const data: ApiTeam[] = response.data;
+        const message: ScoreboardUpdateMessage = JSON.parse(event.data);
 
-        const transformedTeams: Team[] = data.map((team, index) => {
-          const activeMission = team.problems
-            ?.flatMap((p) => p.mission)
-            .find((m) => m.solved === null);
-
-          return {
-            id: index + 1,
-            name: team.name,
-            score: team.score,
-            members: 2 + Math.floor(Math.random() * 3), 
-            problems: team.problems,
-            activeMission: activeMission
-              ? {
-                  type: activeMission.type,
-                  difficulty: activeMission.difficulty,
-                  remainingAttempts: activeMission.remainingAttempts,
-                }
-              : null,
-          };
-        });
-
-        setTeams(transformedTeams);
-        setApiError(null);
-      } catch (error) {
-        console.error("Error fetching teams:", error);
-        setApiError(
-          "CRITICAL ERROR: Submarine OS connection to surface command lost. Retrying..."
-        );
-      } finally {
-        setIsLoading(false);
+        if (
+          message.type === "SCOREBOARD_UPDATE" &&
+          Array.isArray(message.teams)
+        ) {
+          console.log("[WS] Received SCOREBOARD_UPDATE");
+          setTeams(transformTeams(message.teams));
+        } else {
+          console.warn("[WS] Unknown message type:", message);
+        }
+      } catch (err) {
+        console.warn("[WS] Non-JSON message ignored:", event.data);
       }
     };
 
-    fetchTeams();
-
-    const connectWebSocket = () => {
-      const socket: CustomWebSocket = new WebSocket(
-        process.env.REACT_APP_WS_URL!
-      );
-      ws.current = socket;
-
-      socket.onopen = () => {
-        console.log("[WS] Connected");
-        setApiError(null);
-
-        socket._pingInterval = setInterval(() => {
-          if (socket.readyState === WebSocket.OPEN) socket.send("ping");
-        }, 30000);
-      };
-
-      socket.onmessage = (event) => {
-        const message = event.data;
-
-        if (message === "pong") return;
-        if (message === "update-dashboard") {
-          console.log("[WS] Update signal received — refetching API...");
-          fetchTeams(); 
-          return;
-        }
-
-        try {
-          const data: ApiTeam[] = JSON.parse(message);
-          if (!Array.isArray(data)) return;
-
-          const transformedTeams: Team[] = data.map((team, index) => {
-            const activeMission = team.problems
-              ?.flatMap((p) => p.mission)
-              .find((m) => m.solved === null);
-
-            return {
-              id: index + 1,
-              name: team.name,
-              score: team.score,
-              members: 2 + Math.floor(Math.random() * 3),
-              problems: team.problems,
-              activeMission: activeMission
-                ? {
-                    type: activeMission.type,
-                    difficulty: activeMission.difficulty,
-                    remainingAttempts: activeMission.remainingAttempts,
-                  }
-                : null,
-            };
-          });
-
-          setTeams(transformedTeams);
-        } catch (err) {
-          console.warn("[WS] Non-JSON message ignored:", message);
-        }
-      };
-
-      socket.onerror = (error) => {
-        console.error("[WS] Error:", error);
-        setApiError("WebSocket connection error. Trying to reconnect...");
-      };
-
-      socket.onclose = (e) => {
-        console.warn(`[WS] Closed (${e.code}). Reconnecting in 5s...`);
-        if (socket._pingInterval) clearInterval(socket._pingInterval);
-        setTimeout(connectWebSocket, 5000);
-      };
+    socket.onerror = (error) => {
+      console.error("[WS] Error:", error);
+      setApiError("WebSocket connection error. Attempting to reconnect...");
     };
 
-    connectWebSocket();
+    socket.onclose = (event) => {
+      console.warn(
+        `[WS] Closed (code: ${event.code}, reason: ${event.reason || "none"})`
+      );
+      ws.current = null;
+
+      // Exponential backoff reconnection
+      const attempt = reconnectAttempts.current++;
+      const delay = Math.min(1000 * Math.pow(2, attempt), 30000); // up to 30s
+
+      console.log(`[WS] Reconnecting in ${delay}ms (attempt ${attempt + 1})`);
+      setTimeout(connectWebSocket, delay);
+    };
+  };
+
+  useEffect(() => {
+    fetchTeams(); // Initial REST load
+    connectWebSocket(); // Live updates
 
     return () => {
       if (ws.current) {
-        if (ws.current._pingInterval) clearInterval(ws.current._pingInterval);
+        console.log("[WS] Cleaning up connection...");
         ws.current.close();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { teams, apiError, isLoading };

@@ -6,9 +6,16 @@ import {
   Fish,
   CheckCircle,
   XCircle,
-  Target,
   ListTodo,
   LucideIcon,
+  Droplets,
+  Compass,
+  Anchor,
+  Heart,
+  Zap as Lightning,
+  Gauge as DepthGauge,
+  Radio as Signal,
+  Trash2 as Trash,
 } from 'lucide-react';
 import { Team as TeamType } from '../hooks/useTeams';
 
@@ -25,6 +32,74 @@ const BadgeIcon: React.FC<BadgeIconProps> = ({ badgeUrl }) => {
     }[badgeUrl] as LucideIcon) || Fish;
   return <Icon className="w-4 h-4" />;
 };
+
+interface EffectConfig {
+  icon: LucideIcon;
+  textColor: string;
+  bgColor: string;
+  animationClass: string;
+}
+
+const getEffectConfig = (effectType: string): EffectConfig => {
+  const configs: Record<string, EffectConfig> = {
+    WATER_QUALITY: {
+      icon: Droplets,
+      textColor: 'text-cyan-300',
+      bgColor: 'bg-cyan-500/20',
+      animationClass: 'animate-drop-fall',
+    },
+    NAVIGATION: {
+      icon: Compass,
+      textColor: 'text-green-300',
+      bgColor: 'bg-green-500/20',
+      animationClass: 'animate-spin-compass',
+    },
+    STRUCTURAL_INTEGRITY: {
+      icon: Anchor,
+      textColor: 'text-orange-300',
+      bgColor: 'bg-orange-500/20',
+      animationClass: 'animate-bounce-anchor',
+    },
+    MARINE_LIFE: {
+      icon: Heart,
+      textColor: 'text-rose-300',
+      bgColor: 'bg-rose-500/20',
+      animationClass: 'animate-pulse-heart',
+    },
+    ENERGY: {
+      icon: Lightning,
+      textColor: 'text-yellow-300',
+      bgColor: 'bg-yellow-500/20',
+      animationClass: 'animate-flash-lightning',
+    },
+    DEPTH: {
+      icon: DepthGauge,
+      textColor: 'text-blue-300',
+      bgColor: 'bg-blue-500/20',
+      animationClass: 'animate-rise-depth',
+    },
+    COMMUNICATION: {
+      icon: Signal,
+      textColor: 'text-purple-300',
+      bgColor: 'bg-purple-500/20',
+      animationClass: 'animate-ping-signal',
+    },
+    POLLUTION_CONTROL: {
+      icon: Trash,
+      textColor: 'text-gray-600',
+      bgColor: 'bg-gray-400/20',
+      animationClass: 'animate-cleanup',
+    },
+  };
+
+  return configs[effectType] || {
+    icon: Fish,
+    textColor: 'text-gray-300',
+    bgColor: 'bg-gray-500/20',
+    animationClass: '',
+  };
+};
+
 
 interface TeamProps {
   team: TeamType;
@@ -77,15 +152,28 @@ const Team: React.FC<TeamProps> = ({ team, rank, isSliderItem, maxScore }) => {
                 <ListTodo className="w-3 h-3 mr-1" />
                 {missionsLeft}{" "}
                 {missionsLeft === 1 ? "MISSION" : "MISSIONS"}{" "}
-                LEFT
-              </span>
-              {team.activeMission && (
-                <span className="text-xs text-purple-300 font-mono flex items-center bg-purple-500/20 px-2 py-0.5 rounded">
-                  <Target className="w-3 h-3 mr-1.5" />
-                  {team.activeMission.type} (D:{" "}
-                  {team.activeMission.difficulty}, A:{" "}
-                  {team.activeMission.remainingAttempts})
-                </span>
+                LEFT</span>
+              <div className="h-4 border-l border-gray-500/30"></div>
+              {team.appliedEffects && team.appliedEffects.length > 0 && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs text-gray-400 font-mono">APPLIED EFFECTS:</span>
+                  <div className="flex items-center space-x-1">
+                    {team.appliedEffects.map((effect) => {
+                      const config = getEffectConfig(effect.effectType);
+                      const EffectIcon = config.icon;
+                      return (
+                        <span
+                          key={effect.effectType}
+                          className={`text-xs font-mono flex items-center ${config.textColor} ${config.bgColor} px-2 py-0.5 rounded`}
+                          title={effect.effectType}
+                        >
+                          <EffectIcon className={`w-3 h-3 mr-1.5 ${config.animationClass}`} />
+                          {effect.totalValue}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
             </div>
           </div>

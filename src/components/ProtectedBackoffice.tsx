@@ -1,0 +1,43 @@
+import React, { useEffect } from 'react';
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import Backoffice from './Backoffice';
+
+const RequireAuth: React.FC = () => {
+  const { isAuthenticated, isLoading, login, error } = useAuth();
+
+  useEffect(() => {
+    // When auth state is known and user is not authenticated, trigger Keycloak login
+    if (!isLoading && !isAuthenticated) {
+      login();
+    }
+  }, [isLoading, isAuthenticated, login]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-cyan-400 font-mono">
+        Initializing secure session...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    // Brief placeholder while redirecting to Keycloak
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-cyan-400 font-mono">
+        Redirecting to login{error ? `: ${error}` : '...'}
+      </div>
+    );
+  }
+
+  return <Backoffice />;
+};
+
+const ProtectedBackoffice: React.FC = () => {
+  return (
+    <AuthProvider>
+      <RequireAuth />
+    </AuthProvider>
+  );
+};
+
+export default ProtectedBackoffice;
