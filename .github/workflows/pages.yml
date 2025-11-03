@@ -34,10 +34,11 @@ jobs:
         env:
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
           REACT_APP_DEADLINE_DATE: ${{ secrets.REACT_APP_DEADLINE_DATE }}
-          REACT_APP_WS_URL: ${{ secrets.REACT_APP_WS_URL }}
+          REACT_APP_WEBSOCKET_URL: ${{ secrets.REACT_APP_WEBSOCKET_URL }}
           REACT_APP_HTF_TOTAL_TEAMS: ${{ secrets.REACT_APP_HTF_TOTAL_TEAMS }}
-          REACT_APP_AUTH_USERNAME: ${{ secrets.REACT_APP_AUTH_USERNAME }}
-          REACT_APP_AUTH_PASSWORD: ${{ secrets.REACT_APP_AUTH_PASSWORD }}
+          REACT_APP_KEYCLOAK_URL: ${{ secrets.REACT_APP_KEYCLOAK_URL }}
+          REACT_APP_KEYCLOAK_REALM: ${{ secrets.REACT_APP_KEYCLOAK_REALM }}
+          REACT_APP_KEYCLOAK_CLIENT_ID: ${{ secrets.REACT_APP_KEYCLOAK_CLIENT_ID }}
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
