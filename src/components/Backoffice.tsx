@@ -36,7 +36,7 @@ const Backoffice: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [wsConnected, setWsConnected] = useState(false);
   const [showTestTeams, setShowTestTeams] = useState(false);
-  const { token, isAuthenticated } = useAuth();
+  const { token } = useAuth();
   const ws = useRef<WebSocket | null>(null);
   const reconnectAttempts = useRef(0);
   const reconnectTimerId = useRef<number | null>(null);
