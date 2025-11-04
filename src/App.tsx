@@ -13,7 +13,7 @@ import ProtectedBackoffice from "./components/ProtectedBackoffice";
 
 const Dashboard = () => {
   const { time, timeLeft, formatTimeLeft } = useTime();
-  const { teams, apiError, isLoading } = useTeams();
+  const { teams, aggregate, apiError, isLoading } = useTeams();
   const { fish, bubbles } = useMarineLife();
   const {
     sonarPing,
@@ -85,7 +85,7 @@ const Dashboard = () => {
           formatTimeLeft={formatTimeLeft}
         />
 
-        {!isCompactView && <SensorGrid teams={teams} fishCount={fish.length} />}
+        {!isCompactView && <SensorGrid teams={teams} fishCount={fish.length} aggregate={aggregate} />}
 
         <MissionStatus
           teams={teams}

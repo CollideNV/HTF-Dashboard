@@ -1,61 +1,138 @@
-import React from 'react';
-import { Users, Trophy, Fish, Radar, LucideIcon } from 'lucide-react';
-import { Team } from '../hooks/useTeams';
+import React from "react";
+import {
+  Fish,
+  LucideIcon,
+  Compass,
+  Droplets,
+  Heart,
+  Radio,
+  Anchor,
+  Zap,
+  Activity,
+  Bot,
+} from "lucide-react";
+import { Team } from "../hooks/useTeams";
 
-const colorClasses = {
-  cyan: {
-    border: "border-cyan-500/30",
-    text: "text-cyan-400",
-    bg: "bg-cyan-400"
-  },
-  green: {
-    border: "border-green-500/30",
-    text: "text-green-400",
-    bg: "bg-green-400"
-  },
-  blue: {
-    border: "border-blue-500/30",
-    text: "text-blue-400",
-    bg: "bg-blue-400"
-  },
-  orange: {
-    border: "border-orange-500/30",
-    text: "text-orange-400",
-    bg: "bg-orange-400"
-  },
-  red: {
-    border: "border-red-500/30",
-    text: "text-red-400",
-    bg: "bg-red-400"
-  }
+interface Aggregate {
+  totalTeams: number;
+  activeQuests: number;
+  globalEffects: AppliedEffect[];
+}
+
+interface AppliedEffect {
+  effectType: string;
+  totalValue: number;
+}
+
+interface EffectConfig {
+  icon: LucideIcon;
+  textColor: string;
+  bgColor: string;
+  animationClass: string;
+  displayName: string;
+}
+
+const getEffectConfig = (effectType: string): EffectConfig => {
+  const configs: Record<string, EffectConfig> = {
+    WATER_QUALITY: {
+      icon: Droplets,
+      textColor: "text-cyan-300",
+      bgColor: "bg-cyan-500/20",
+      animationClass: "animate-drop-fall",
+      displayName: "CURRENTS FLOW",
+    },
+    NAVIGATION: {
+      icon: Compass,
+      textColor: "text-green-300",
+      bgColor: "bg-green-500/20",
+      animationClass: "animate-spin-compass",
+      displayName: "SONAR COMPASS",
+    },
+    STRUCTURAL_INTEGRITY: {
+      icon: Anchor,
+      textColor: "text-orange-300",
+      bgColor: "bg-orange-500/20",
+      animationClass: "animate-bounce-anchor",
+      displayName: "HULL STRENGTH",
+    },
+    MARINE_LIFE: {
+      icon: Heart,
+      textColor: "text-rose-300",
+      bgColor: "bg-rose-500/20",
+      animationClass: "animate-pulse-heart",
+      displayName: "BIOLUMINESCENCE",
+    },
+    ENERGY: {
+      icon: Zap,
+      textColor: "text-yellow-300",
+      bgColor: "bg-yellow-500/20",
+      animationClass: "animate-flash-lightning",
+      displayName: "POWER CORE",
+    },
+    DEPTH: {
+      icon: Activity,
+      textColor: "text-blue-300",
+      bgColor: "bg-blue-500/20",
+      animationClass: "animate-rise-depth",
+      displayName: "DEPTH GAUGE",
+    },
+    COMMUNICATION: {
+      icon: Radio,
+      textColor: "text-purple-300",
+      bgColor: "bg-purple-500/20",
+      animationClass: "animate-ping-signal",
+      displayName: "DEEP ECHO",
+    },
+    POLLUTION_CONTROL: {
+      icon: Bot,
+      textColor: "text-gray-400",
+      bgColor: "bg-gray-500/20",
+      animationClass: "animate-cleanup",
+      displayName: "CLEANER BOTS",
+    },
+  };
+
+  return (
+    configs[effectType] || {
+      icon: Fish,
+      textColor: "text-gray-300",
+      bgColor: "bg-gray-500/20",
+      animationClass: "",
+      displayName: effectType,
+    }
+  );
 };
 
-interface SensorCardProps {
+interface EffectCardProps {
   icon: LucideIcon;
   label: string;
   value: string | number;
-  color: keyof typeof colorClasses;
-  width: string;
+  textColor: string;
+  bgColor: string;
+  animationClass: string;
 }
 
-const SensorCard: React.FC<SensorCardProps> = ({ icon: Icon, label, value, color, width }) => {
-  const classes = colorClasses[color] || colorClasses.cyan;
+const EffectCard: React.FC<EffectCardProps> = ({
+  icon: Icon,
+  label,
+  value,
+  textColor,
+  bgColor,
+  animationClass,
+}) => {
   return (
-    <div className={`bg-black/70 backdrop-blur-md rounded border ${classes.border} p-4`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <div className={`${classes.text} text-xs font-mono opacity-70`}>
-            {label}
-          </div>
-          <div className="text-2xl font-mono text-white">{value}</div>
+    <div
+      className={`${bgColor} backdrop-blur-md rounded border border-white/10 p-4 relative overflow-hidden group`}
+    >
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white/5 transition-opacity duration-300" />
+      <div className="relative z-10">
+        <div className={`${textColor} text-xs font-mono opacity-70 mb-2`}>
+          {label}
         </div>
-        <Icon className={`w-6 h-6 ${classes.text}`} />
-      </div>
-      <div className="mt-2 h-1 bg-gray-800 rounded">
-        <div
-          className={`h-full ${classes.bg} rounded animate-pulse`}
-          style={{ width }}
-        />
+        <div className="flex items-center justify-between">
+          <div className={`text-2xl font-mono text-white`}>{value}</div>
+          <Icon className={`w-6 h-6 ${textColor} ${animationClass}`} />
+        </div>
       </div>
     </div>
   );
@@ -64,72 +141,39 @@ const SensorCard: React.FC<SensorCardProps> = ({ icon: Icon, label, value, color
 interface SensorGridProps {
   teams: Team[];
   fishCount: number;
+  aggregate: Aggregate | null;
 }
 
-const SensorGrid: React.FC<SensorGridProps> = ({ teams, fishCount }) => {
-
-  const maxScore = teams.length > 0 ? Math.max(...teams.map((t) => t.score)) : 0;
-  const totalTeams = parseInt(process.env.REACT_APP_HTF_TOTAL_TEAMS || "25", 10);
-  const teamsActivePercent = totalTeams > 0 ? Math.min((teams.length / totalTeams) * 100, 100) : 0;
-
-  // Deepest submarine dive: 10,927 meters (Trieste, Mariana Trench, 1960)
-  const deepestPoint = 10927;
-  const [currentDepth, setCurrentDepth] = React.useState(0);
-
+const SensorGrid: React.FC<SensorGridProps> = ({ aggregate }) => {
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentDepth((prev) => {
-        if (prev >= deepestPoint) return deepestPoint;
-        return Math.min(prev + Math.floor(Math.random() * 30 + 10), deepestPoint);
-      });
-    }, 500);
-    return () => clearInterval(interval);
-  }, []);
-
-  const depthPercent = Math.round((currentDepth / deepestPoint) * 100);
-
-  const dangerZonePercent = 90;
-  const isDangerZone = depthPercent >= dangerZonePercent;
-  const isMaxDepth = currentDepth >= deepestPoint;
-
-  React.useEffect(() => {
-    if (isMaxDepth) {
-      const timeout = setTimeout(() => setCurrentDepth(0), 60000);
-      return () => clearTimeout(timeout);
+    if (aggregate) {
+      console.log("[SensorGrid] Aggregate data updated:", aggregate);
     }
-  }, [isMaxDepth]);
+  }, [aggregate]);
 
   return (
-    <div className="grid grid-cols-4 gap-4 mb-8">
-      <SensorCard
-        icon={Users}
-        label="TEAMS ACTIVE"
-        value={teams.length}
-        color="cyan"
-        width={`${teamsActivePercent}%`}
-      />
-      <SensorCard
-        icon={Trophy}
-        label="MAX SCORE"
-        value={maxScore}
-        color="green"
-        width="92%"
-      />
-      <SensorCard
-        icon={Fish}
-        label="MARINE LIFE"
-        value={fishCount ? fishCount : 120}
-        color="blue"
-        width="78%"
-      />
-      <SensorCard
-        icon={Radar}
-        label="DEPTH"
-        value={`${currentDepth}M`}
-        color={isDangerZone ? "red" : "orange"}
-        width={`${depthPercent}%`}
-      />
-    </div>
+    <>
+      {aggregate && aggregate.globalEffects && aggregate.globalEffects.length > 0 && (
+        <div className="mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4">
+            {aggregate.globalEffects.map((effect, index) => {
+              const config = getEffectConfig(effect.effectType);
+              return (
+                <EffectCard
+                  key={`effect-${effect.effectType}-${index}-${effect.totalValue}`}
+                  icon={config.icon}
+                  label={config.displayName}
+                  value={effect.totalValue}
+                  textColor={config.textColor}
+                  bgColor={config.bgColor}
+                  animationClass={config.animationClass}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

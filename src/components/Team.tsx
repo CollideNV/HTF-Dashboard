@@ -15,7 +15,7 @@ import {
   Zap as Lightning,
   Gauge as DepthGauge,
   Radio as Signal,
-  Trash2 as Trash,
+  Bot as Trash,
 } from 'lucide-react';
 import { Team as TeamType } from '../hooks/useTeams';
 
@@ -158,12 +158,12 @@ const Team: React.FC<TeamProps> = ({ team, rank, isSliderItem, maxScore }) => {
                 <div className="flex items-center space-x-2">
                   <span className="text-xs text-gray-400 font-mono">APPLIED EFFECTS:</span>
                   <div className="flex items-center space-x-1">
-                    {team.appliedEffects.map((effect) => {
+                    {team.appliedEffects.map((effect, effectIndex) => {
                       const config = getEffectConfig(effect.effectType);
                       const EffectIcon = config.icon;
                       return (
                         <span
-                          key={effect.effectType}
+                          key={`${team.id}-${effect.effectType}-${effectIndex}`}
                           className={`text-xs font-mono flex items-center ${config.textColor} ${config.bgColor} px-2 py-0.5 rounded`}
                           title={effect.effectType}
                         >
@@ -181,9 +181,9 @@ const Team: React.FC<TeamProps> = ({ team, rank, isSliderItem, maxScore }) => {
 
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2">
-            {team.problems?.map((p: any) => (
+            {team.problems?.map((p: any, problemIndex: number) => (
               <div
-                key={p.name}
+                key={`${team.id}-${p.name}-${problemIndex}`}
                 className={`flex items-center space-x-1.5 p-1.5 rounded border ${
                   p.solved
                     ? "bg-green-500/10 border-green-500/30 text-green-400"

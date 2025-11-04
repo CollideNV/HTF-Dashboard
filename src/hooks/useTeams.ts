@@ -39,14 +39,29 @@ export interface Team {
   appliedEffects: AppliedEffect[];
 }
 
+interface Aggregate {
+  totalTeams: number;
+  activeQuests: number;
+  globalEffects: AppliedEffect[];
+}
+
 interface ScoreboardUpdateMessage {
   type: "SCOREBOARD_UPDATE";
   teams: ApiTeam[];
+  aggregate?: Aggregate;
   timestamp: string;
+}
+
+export interface UseTeamsReturn {
+  teams: Team[];
+  aggregate: Aggregate | null;
+  apiError: string | null;
+  isLoading: boolean;
 }
 
 const useTeams = () => {
   const [teams, setTeams] = useState<Team[]>([]);
+  const [aggregate, setAggregate] = useState<Aggregate | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const ws = useRef<WebSocket | null>(null);
@@ -82,8 +97,10 @@ const useTeams = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL!}/dashboard`
       );
-      const data: ApiTeam[] = response.data;
+      const data: ApiTeam[] = response.data.teams;
+      const aggregateData: Aggregate = response.data.aggregate;
       setTeams(transformTeams(data));
+      setAggregate(aggregateData);
       setApiError(null);
     } catch (error) {
       console.error("Error fetching teams:", error);
@@ -116,7 +133,15 @@ const useTeams = () => {
           Array.isArray(message.teams)
         ) {
           console.log("[WS] Received SCOREBOARD_UPDATE");
+          console.log("[WS] Teams count:", message.teams.length);
+          console.log("[WS] Aggregate data:", message.aggregate);
+          
           setTeams(transformTeams(message.teams));
+          
+          if (message.aggregate) {
+            console.log("[WS] Setting aggregate:", message.aggregate);
+            setAggregate(message.aggregate);
+          }
         } else {
           console.warn("[WS] Unknown message type:", message);
         }
@@ -158,7 +183,7 @@ const useTeams = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { teams, apiError, isLoading };
+  return { teams, aggregate, apiError, isLoading };
 };
 
 export default useTeams;
