@@ -7,13 +7,22 @@ interface AppliedEffect {
 }
 
 interface Mission {
-  type: string;
+  name: string;
+  objective: string;
+  parameters: string;
   difficulty: number;
-  remainingAttempts: number;
-  solved: boolean | null;
+  remainingAttempts: string;
+  solved: boolean;
+  effect: string;
 }
 
 interface Problem {
+  name: string;
+  description: string;
+  solved: boolean;
+  score: number;
+  badgeUrl: string;
+  isClosed: boolean;
   mission: Mission[];
 }
 
@@ -32,9 +41,9 @@ export interface Team {
   members: number;
   problems: Problem[];
   activeMission: {
-    type: string;
+    name: string;
     difficulty: number;
-    remainingAttempts: number;
+    remainingAttempts: string;
   } | null;
   appliedEffects: AppliedEffect[];
 }
@@ -69,27 +78,34 @@ const useTeams = () => {
 
   // --- Helper: Transform API data into Team[] ---
   const transformTeams = (data: ApiTeam[]): Team[] =>
-    data.map((team, index) => {
-      const activeMission = team.problems
-        ?.flatMap((p) => p.mission)
-        .find((m) => m.solved === null);
+    data
+      .map((team, index) => {
+        // Filter out problems that are both unsolved and closed
+        const openProblems = team.problems.filter(
+          (p) => !(p.solved === false && p.isClosed === true)
+        );
 
-      return {
-        id: index + 1,
-        name: team.name,
-        score: team.score,
-        members: 2 + Math.floor(Math.random() * 3),
-        problems: team.problems,
-        activeMission: activeMission
-          ? {
-              type: activeMission.type,
-              difficulty: activeMission.difficulty,
-              remainingAttempts: activeMission.remainingAttempts,
-            }
-          : null,
-        appliedEffects: team.appliedEffects,
-      };
-    });
+        const activeMission = openProblems
+          ?.flatMap((p) => p.mission)
+          .find((m) => m.solved === false);
+
+        return {
+          id: index + 1,
+          name: team.name,
+          score: team.score,
+          members: 2 + Math.floor(Math.random() * 3),
+          problems: openProblems,
+          activeMission: activeMission
+            ? {
+                name: activeMission.name,
+                difficulty: activeMission.difficulty,
+                remainingAttempts: activeMission.remainingAttempts,
+              }
+            : null,
+          appliedEffects: team.appliedEffects,
+        };
+      })
+      .filter((team) => team.problems.length > 0);
 
   // --- Helper: Fetch teams from REST API ---
   const fetchTeams = async () => {
