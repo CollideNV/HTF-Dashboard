@@ -155,7 +155,7 @@ const SensorGrid: React.FC<SensorGridProps> = ({ aggregate }) => {
     <>
       {aggregate && aggregate.globalEffects && aggregate.globalEffects.length > 0 && (
         <div className="mb-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-8 gap-4">
             {aggregate.globalEffects.map((effect, index) => {
               const config = getEffectConfig(effect.effectType);
               return (
