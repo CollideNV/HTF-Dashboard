@@ -167,7 +167,7 @@ const Team: React.FC<TeamProps> = ({ team, rank, isSliderItem, maxScore }) => {
                           className={`text-xs font-mono flex items-center ${config.textColor} ${config.bgColor} px-2 py-0.5 rounded`}
                           title={effect.effectType}
                         >
-                          <EffectIcon className={`w-3 h-3 mr-1.5 ${config.animationClass}`} />
+                          <EffectIcon className={`w-3 h-3 mr-1.5`} />
                           {effect.totalValue}
                         </span>
                       );
