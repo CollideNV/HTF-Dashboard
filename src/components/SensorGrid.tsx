@@ -8,7 +8,7 @@ import {
   Radio,
   Anchor,
   Zap,
-  Activity,
+  Gauge as Activity,
   Bot,
 } from "lucide-react";
 import { Team } from "../hooks/useTeams";
@@ -73,7 +73,7 @@ const getEffectConfig = (effectType: string): EffectConfig => {
       icon: Activity,
       textColor: "text-blue-300",
       bgColor: "bg-blue-500/20",
-      animationClass: "animate-rise-depth",
+      animationClass: "animate-cleanup",
       displayName: "DEPTH GAUGE",
     },
     COMMUNICATION: {
@@ -85,8 +85,8 @@ const getEffectConfig = (effectType: string): EffectConfig => {
     },
     POLLUTION_CONTROL: {
       icon: Bot,
-      textColor: "text-gray-400",
-      bgColor: "bg-gray-500/20",
+      textColor: "text-indigo-300",
+      bgColor: "bg-indigo-500/20",
       animationClass: "animate-cleanup",
       displayName: "CLEANER BOTS",
     },
@@ -153,26 +153,28 @@ const SensorGrid: React.FC<SensorGridProps> = ({ aggregate }) => {
 
   return (
     <>
-      {aggregate && aggregate.globalEffects && aggregate.globalEffects.length > 0 && (
-        <div className="mb-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-8 gap-4">
-            {aggregate.globalEffects.map((effect, index) => {
-              const config = getEffectConfig(effect.effectType);
-              return (
-                <EffectCard
-                  key={`effect-${effect.effectType}-${index}-${effect.totalValue}`}
-                  icon={config.icon}
-                  label={config.displayName}
-                  value={effect.totalValue}
-                  textColor={config.textColor}
-                  bgColor={config.bgColor}
-                  animationClass={config.animationClass}
-                />
-              );
-            })}
+      {aggregate &&
+        aggregate.globalEffects &&
+        aggregate.globalEffects.length > 0 && (
+          <div className="mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-8 gap-4">
+              {aggregate.globalEffects.map((effect, index) => {
+                const config = getEffectConfig(effect.effectType);
+                return (
+                  <EffectCard
+                    key={`effect-${effect.effectType}-${index}-${effect.totalValue}`}
+                    icon={config.icon}
+                    label={config.displayName}
+                    value={effect.totalValue}
+                    textColor={config.textColor}
+                    bgColor={config.bgColor}
+                    animationClass={config.animationClass}
+                  />
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </>
   );
 };

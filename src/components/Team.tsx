@@ -76,7 +76,7 @@ const getEffectConfig = (effectType: string): EffectConfig => {
       icon: DepthGauge,
       textColor: 'text-blue-300',
       bgColor: 'bg-blue-500/20',
-      animationClass: 'animate-rise-depth',
+      animationClass: "animate-cleanup",
     },
     COMMUNICATION: {
       icon: Signal,
@@ -86,8 +86,8 @@ const getEffectConfig = (effectType: string): EffectConfig => {
     },
     POLLUTION_CONTROL: {
       icon: Trash,
-      textColor: 'text-gray-600',
-      bgColor: 'bg-gray-400/20',
+      textColor: 'text-indigo-300',
+      bgColor: 'bg-indigo-500/20',
       animationClass: 'animate-cleanup',
     },
   };
