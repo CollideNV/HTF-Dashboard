@@ -151,30 +151,47 @@ const SensorGrid: React.FC<SensorGridProps> = ({ aggregate }) => {
     }
   }, [aggregate]);
 
+  // Define all possible effect types that should always be displayed
+  const allEffectTypes = [
+    "WATER_QUALITY",
+    "NAVIGATION",
+    "STRUCTURAL_INTEGRITY",
+    "MARINE_LIFE",
+    "ENERGY",
+    "DEPTH",
+    "COMMUNICATION",
+    "POLLUTION_CONTROL",
+  ];
+
+  // Create a map of effect values from aggregate data
+  const effectValues = new Map<string, number>();
+  if (aggregate?.globalEffects) {
+    aggregate.globalEffects.forEach((effect) => {
+      effectValues.set(effect.effectType, effect.totalValue);
+    });
+  }
+
   return (
     <>
-      {aggregate &&
-        aggregate.globalEffects &&
-        aggregate.globalEffects.length > 0 && (
-          <div className="mb-8">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-8 gap-4">
-              {aggregate.globalEffects.map((effect, index) => {
-                const config = getEffectConfig(effect.effectType);
-                return (
-                  <EffectCard
-                    key={`effect-${effect.effectType}-${index}-${effect.totalValue}`}
-                    icon={config.icon}
-                    label={config.displayName}
-                    value={effect.totalValue}
-                    textColor={config.textColor}
-                    bgColor={config.bgColor}
-                    animationClass={config.animationClass}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        )}
+      <div className="mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-8 gap-4">
+          {allEffectTypes.map((effectType) => {
+            const config = getEffectConfig(effectType);
+            const value = effectValues.get(effectType) || 0;
+            return (
+              <EffectCard
+                key={`effect-${effectType}`}
+                icon={config.icon}
+                label={config.displayName}
+                value={value}
+                textColor={config.textColor}
+                bgColor={config.bgColor}
+                animationClass={config.animationClass}
+              />
+            );
+          })}
+        </div>
+      </div>
     </>
   );
 };
