@@ -6,15 +6,26 @@ import React, {
   ReactNode,
   useRef,
 } from "react";
-import Keycloak from "keycloak-js";
+
+type ManualAuthInput = {
+  accessToken: string;
+  refreshToken?: string;
+  issuer?: string; // e.g. https://host/realms/<realm>
+  clientId?: string; // needed for refresh on some IdPs
+  clientSecret?: string; // optional
+  tokenEndpointOverride?: string; // if not provided, we try `${issuer}/protocol/openid-connect/token`
+};
 
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   token: string | null;
   error: string | null;
-  login: () => void;
-  logout: () => void;
+  claims: Record<string, any> | null;
+  expiresAt: number | null; // epoch seconds
+  setManualAuth: (input: ManualAuthInput) => void;
+  clearAuth: () => void;
+  refreshIfPossible: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,96 +34,43 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Keycloak configuration
-const KEYCLOAK_URL =
-  process.env.REACT_APP_KEYCLOAK_URL || "https://security.bewire.services:8082";
-const REALM = process.env.REACT_APP_KEYCLOAK_REALM || "collide-production";
-const CLIENT_ID =
-  process.env.REACT_APP_KEYCLOAK_CLIENT_ID || "collide-hack-the-future";
-
-// Create a single Keycloak instance (avoid re-instantiation across renders)
-const keycloak = new Keycloak({ url: KEYCLOAK_URL, realm: REALM, clientId: CLIENT_ID });
+function decodeJwt(token: string): Record<string, any> | null {
+  try {
+    const [, payload] = token.split(".");
+    const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    return JSON.parse(decodeURIComponent(escape(json)));
+  } catch {
+    return null;
+  }
+}
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [claims, setClaims] = useState<Record<string, any> | null>(null);
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const refreshTimerRef = useRef<number | null>(null);
+  const refreshConfigRef = useRef<Omit<ManualAuthInput, "accessToken"> | null>(null);
 
   useEffect(() => {
-    const initAuth = async () => {
+    // Bootstrap from localStorage if present
+    const stored = localStorage.getItem("htf_manual_auth");
+    if (stored) {
       try {
-        const silentUri = `${window.location.origin}/silent-check-sso.html`;
-        // Initialize keycloak using PKCE and silent SSO if possible
-        const authenticated = await keycloak.init({
-          onLoad: "check-sso",
-          pkceMethod: "S256",
-          silentCheckSsoRedirectUri: silentUri,
-          checkLoginIframe: false,
-        });
-
-        if (authenticated) {
+        const parsed: { token: string; refreshToken?: string; config?: Omit<ManualAuthInput, "accessToken"> } = JSON.parse(stored);
+        if (parsed.token) {
+          applyToken(parsed.token);
+          refreshConfigRef.current = parsed.config ?? null;
           setIsAuthenticated(true);
-          setToken(keycloak.token ?? null);
           setError(null);
-
-          // Proactively refresh token before expiry
-          const setupRefresh = () => {
-            // Clear any previous timer
-            if (refreshTimerRef.current) {
-              window.clearInterval(refreshTimerRef.current);
-              refreshTimerRef.current = null;
-            }
-
-            const intervalId = window.setInterval(async () => {
-              try {
-                // Refresh if token expires in < 60s
-                const refreshed = await keycloak.updateToken(60);
-                if (refreshed) {
-                  setToken(keycloak.token ?? null);
-                  // console.debug("[Keycloak] Token refreshed");
-                }
-              } catch (err) {
-                console.error("[Keycloak] Token refresh failed:", err);
-                setError("Session expired. Please login again.");
-                setIsAuthenticated(false);
-                setToken(null);
-              }
-            }, 30 * 1000); // check every 30s
-
-            refreshTimerRef.current = intervalId;
-          };
-
-          setupRefresh();
-
-          // Also handle explicit expiry callback
-          keycloak.onTokenExpired = async () => {
-            try {
-              await keycloak.updateToken(30);
-              setToken(keycloak.token ?? null);
-            } catch (err) {
-              console.error("[Keycloak] Token expired and refresh failed:", err);
-              setIsAuthenticated(false);
-              setToken(null);
-            }
-          };
-        } else {
-          // Not logged in (no existing SSO) — consumer can call login()
-          setIsAuthenticated(false);
-          setToken(null);
         }
-      } catch (err) {
-        console.error("[Keycloak] Initialization error:", err);
-        setIsAuthenticated(false);
-        setToken(null);
-        setError(err instanceof Error ? err.message : "Authentication failed");
-      } finally {
-        setIsLoading(false);
+      } catch {
+        // ignore
       }
-    };
-
-    initAuth();
+    }
+    setIsLoading(false);
 
     return () => {
       if (refreshTimerRef.current) {
@@ -122,25 +80,103 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, []);
 
-  const login = () => {
-    keycloak.login({ redirectUri: `${window.location.origin}/#/backoffice` });
+  const scheduleRefresh = () => {
+    if (refreshTimerRef.current) {
+      window.clearInterval(refreshTimerRef.current);
+      refreshTimerRef.current = null;
+    }
+    refreshTimerRef.current = window.setInterval(() => {
+      // Attempt refresh if expiry within 60s
+      if (expiresAt && expiresAt - Math.floor(Date.now() / 1000) < 60) {
+        refreshIfPossible();
+      }
+    }, 30_000);
   };
 
-  const logout = async () => {
+  function applyToken(access: string) {
+    setToken(access);
+    const c = decodeJwt(access);
+    setClaims(c);
+    const exp = c?.exp ?? null;
+    setExpiresAt(typeof exp === 'number' ? exp : null);
+  }
+
+  const setManualAuth = (input: ManualAuthInput) => {
+    setError(null);
+    applyToken(input.accessToken);
+    setIsAuthenticated(true);
+    // store minimal config for refresh
+    const cfg: Omit<ManualAuthInput, "accessToken"> = {
+      refreshToken: input.refreshToken,
+      issuer: input.issuer,
+      clientId: input.clientId,
+      clientSecret: input.clientSecret,
+      tokenEndpointOverride: input.tokenEndpointOverride,
+    };
+    refreshConfigRef.current = cfg;
+    localStorage.setItem("htf_manual_auth", JSON.stringify({ token: input.accessToken, config: cfg }));
+    scheduleRefresh();
+  };
+
+  const clearAuth = () => {
+    setIsAuthenticated(false);
+    setToken(null);
+    setClaims(null);
+    setExpiresAt(null);
+    setError(null);
+    refreshConfigRef.current = null;
+    if (refreshTimerRef.current) {
+      window.clearInterval(refreshTimerRef.current);
+      refreshTimerRef.current = null;
+    }
+    localStorage.removeItem("htf_manual_auth");
+  };
+
+  const refreshIfPossible = async (): Promise<boolean> => {
+    const cfg = refreshConfigRef.current;
+    if (!cfg?.refreshToken) return false;
+
     try {
-      await keycloak.logout({ redirectUri: window.location.origin });
-    } catch (err) {
-      console.error("[Keycloak] Logout error:", err);
-    } finally {
+      // Build token endpoint
+      let tokenEndpoint = cfg.tokenEndpointOverride;
+      if (!tokenEndpoint && cfg.issuer) {
+        tokenEndpoint = `${cfg.issuer.replace(/\/$/, '')}/protocol/openid-connect/token`;
+      }
+      if (!tokenEndpoint) return false;
+
+      const body = new URLSearchParams();
+      body.set('grant_type', 'refresh_token');
+      body.set('refresh_token', cfg.refreshToken);
+      if (cfg.clientId) body.set('client_id', cfg.clientId);
+      if (cfg.clientSecret) body.set('client_secret', cfg.clientSecret);
+
+      const resp = await fetch(tokenEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      });
+      if (!resp.ok) throw new Error(`Refresh failed: ${resp.status}`);
+      const data = await resp.json();
+      if (!data.access_token) throw new Error('No access_token in refresh response');
+
+      // Update tokens
+      applyToken(data.access_token);
+      refreshConfigRef.current = { ...cfg, refreshToken: data.refresh_token ?? cfg.refreshToken };
+      localStorage.setItem("htf_manual_auth", JSON.stringify({ token: data.access_token, config: refreshConfigRef.current }));
+      return true;
+    } catch (e) {
+      console.error('[Auth] Refresh error', e);
+      setError('Token refresh failed; please provide a new token.');
       setIsAuthenticated(false);
-      setToken(null);
-      setError(null);
+      return false;
     }
   };
 
+  // Removed legacy login/logout (manual entry now); left intentionally unused.
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, isLoading, token, error, login, logout }}
+      value={{ isAuthenticated, isLoading, token, error, claims, expiresAt, setManualAuth, clearAuth, refreshIfPossible }}
     >
       {children}
     </AuthContext.Provider>

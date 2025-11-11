@@ -45,7 +45,7 @@ const Backoffice: React.FC = () => {
   const fetchTeams = useCallback(async () => {
     try {
       if (!token) {
-        setError('Not authenticated. Please login with Keycloak.');
+        setError('Not authenticated. Please provide an access token.');
         setLoading(false);
         return;
       }
