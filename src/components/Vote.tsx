@@ -54,7 +54,10 @@ const Vote: React.FC<VoteModalProps> = ({ isOpen, onClose }) => {
           {!isVoting ? (
             // Initial state
             <div className="flex flex-col items-center space-y-6">
-              <div className="relative group">
+              <button
+                onClick={() => window.open(instructionVideoUrl, "_blank")}
+                className="relative group cursor-pointer hover:scale-105 transition-transform duration-200"
+              >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl opacity-0 group-hover:opacity-20 blur transition-opacity duration-300" />
                 <div className="relative bg-white p-3 rounded-xl">
                   <QRCodeCanvas
@@ -66,7 +69,7 @@ const Vote: React.FC<VoteModalProps> = ({ isOpen, onClose }) => {
                     bgColor="#ffffff"
                   />
                 </div>
-              </div>
+              </button>
 
               <div className="text-center">
                 <p className="text-cyan-300 font-mono text-xs mb-2">
