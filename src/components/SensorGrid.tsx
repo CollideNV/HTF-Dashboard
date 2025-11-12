@@ -145,11 +145,24 @@ interface SensorGridProps {
 }
 
 const SensorGrid: React.FC<SensorGridProps> = ({ aggregate }) => {
+  const [refreshTrigger, setRefreshTrigger] = React.useState(0);
+
+  // Auto-refresh data every 5 minutes
+  React.useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      console.log("[SensorGrid] Triggering refresh of aggregate data...");
+      setRefreshTrigger((prev) => prev + 1);
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(refreshInterval);
+  }, []);
+
   React.useEffect(() => {
     if (aggregate) {
       console.log("[SensorGrid] Aggregate data updated:", aggregate);
+      console.log("[SensorGrid] Global effects:", aggregate.globalEffects);
     }
-  }, [aggregate]);
+  }, [aggregate, refreshTrigger]);
 
   // Define all possible effect types that should always be displayed
   const allEffectTypes = [
@@ -163,13 +176,16 @@ const SensorGrid: React.FC<SensorGridProps> = ({ aggregate }) => {
     "POLLUTION_CONTROL",
   ];
 
-  // Create a map of effect values from aggregate data
-  const effectValues = new Map<string, number>();
-  if (aggregate?.globalEffects) {
-    aggregate.globalEffects.forEach((effect) => {
-      effectValues.set(effect.effectType, effect.totalValue);
-    });
-  }
+  // Create a memoized map of effect values from aggregate data
+  const effectValues = React.useMemo(() => {
+    const map = new Map<string, number>();
+    if (aggregate?.globalEffects) {
+      aggregate.globalEffects.forEach((effect) => {
+        map.set(effect.effectType, effect.totalValue);
+      });
+    }
+    return map;
+  }, [aggregate?.globalEffects]);
 
   return (
     <>
