@@ -32,6 +32,13 @@ const TokenGate: React.FC = () => {
   const expRemaining = expiresAt ? expiresAt - Math.floor(Date.now() / 1000) : null;
   const expMinutes = expRemaining !== null ? Math.max(0, Math.floor(expRemaining / 60)) : null;
 
+  const handleRefresh = async () => {
+    const success = await refreshIfPossible();
+    setStatus(success ? 'Refreshed ✓' : 'Refresh failed');
+    // Clear status after 3 seconds
+    setTimeout(() => setStatus(''), 3000);
+  };
+
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-black text-cyan-400 font-mono">Initializing...</div>;
   }
@@ -86,7 +93,7 @@ const TokenGate: React.FC = () => {
             </div>
           )}
           <div className="flex gap-2">
-            <button onClick={() => refreshIfPossible().then((ok: boolean) => setStatus(ok ? 'Refreshed' : 'Refresh failed'))} className="px-3 py-1 bg-cyan-600 rounded hover:bg-cyan-500">Refresh</button>
+            <button onClick={handleRefresh} className="px-3 py-1 bg-cyan-600 rounded hover:bg-cyan-500">Refresh</button>
             <button onClick={() => navigator.clipboard.writeText(token || '')} className="px-3 py-1 bg-cyan-600 rounded hover:bg-cyan-500">Copy Token</button>
           </div>
           {error && <p className="text-red-400">{error}</p>}

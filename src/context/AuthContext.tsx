@@ -134,7 +134,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshIfPossible = async (): Promise<boolean> => {
     const cfg = refreshConfigRef.current;
-    if (!cfg?.refreshToken) return false;
+    if (!cfg?.refreshToken) {
+      console.warn('[Auth] No refresh token available');
+      return false;
+    }
 
     try {
       // Build token endpoint
@@ -142,7 +145,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!tokenEndpoint && cfg.issuer) {
         tokenEndpoint = `${cfg.issuer.replace(/\/$/, '')}/protocol/openid-connect/token`;
       }
-      if (!tokenEndpoint) return false;
+      if (!tokenEndpoint) {
+        console.error('[Auth] No token endpoint configured');
+        return false;
+      }
+
+      console.log('[Auth] Attempting token refresh from', tokenEndpoint);
 
       const body = new URLSearchParams();
       body.set('grant_type', 'refresh_token');
@@ -155,7 +163,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body.toString(),
       });
-      if (!resp.ok) throw new Error(`Refresh failed: ${resp.status}`);
+      
+      if (!resp.ok) {
+        const errorText = await resp.text();
+        throw new Error(`Refresh failed: ${resp.status} ${resp.statusText} - ${errorText}`);
+      }
+      
       const data = await resp.json();
       if (!data.access_token) throw new Error('No access_token in refresh response');
 
@@ -163,10 +176,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       applyToken(data.access_token);
       refreshConfigRef.current = { ...cfg, refreshToken: data.refresh_token ?? cfg.refreshToken };
       localStorage.setItem("htf_manual_auth", JSON.stringify({ token: data.access_token, config: refreshConfigRef.current }));
+      
+      // Ensure authentication is set and error is cleared
+      setIsAuthenticated(true);
+      setError(null);
+      
+      // Reschedule the refresh timer
+      scheduleRefresh();
+      
+      console.log('[Auth] Token successfully refreshed');
       return true;
     } catch (e) {
-      console.error('[Auth] Refresh error', e);
-      setError('Token refresh failed; please provide a new token.');
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      console.error('[Auth] Refresh error:', errorMsg);
+      setError(`Token refresh failed: ${errorMsg}`);
       setIsAuthenticated(false);
       return false;
     }
