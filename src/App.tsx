@@ -1,5 +1,5 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useTime from "./hooks/useTime";
 import useMarineLife from "./hooks/useMarineLife";
 import useTeams from "./hooks/useTeams";
@@ -12,6 +12,7 @@ import SensorGrid from "./components/SensorGrid";
 import MissionStatus from "./components/MissionStatus";
 import ProtectedBackoffice from "./components/ProtectedBackoffice";
 import Vote from "./components/Vote";
+import PrankOverlay from "./components/PrankOverlay";
 
 const Dashboard = () => {
   const { time, timeLeft, formatTimeLeft } = useTime();
@@ -27,6 +28,20 @@ const Dashboard = () => {
     toggleFullScreen,
   } = useUI(teams);
   const [showVoteModal, setShowVoteModal] = useState(false);
+  const [showPrankOverlay, setShowPrankOverlay] = useState(false);
+
+  // Trigger prank with keyboard shortcut (Ctrl+P)
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "p") {
+        e.preventDefault();
+        setShowPrankOverlay(!showPrankOverlay);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [showPrankOverlay]);
 
   if (isLoading) {
     return (
@@ -100,6 +115,7 @@ const Dashboard = () => {
       </div>
 
       <Vote isOpen={showVoteModal} onClose={() => setShowVoteModal(false)} />
+      <PrankOverlay isActive={showPrankOverlay} />
     </div>
   );
 };
