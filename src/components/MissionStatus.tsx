@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Radio } from 'lucide-react';
 import Team from './Team';
 import { Team as TeamType } from '../hooks/useTeams';
 
@@ -29,6 +29,15 @@ const MissionStatus: React.FC<MissionStatusProps> = ({ teams, apiError, isCompac
         <div className="flex flex-col items-center justify-center h-96 text-red-400 font-mono">
           <AlertTriangle className="w-16 h-16 mb-4 animate-pulse" />
           <p className="text-xl text-center animate-pulse">{apiError}</p>
+        </div>
+      ) : sortedTeams.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-96 text-cyan-400 font-mono">
+          <div className="relative mb-6">
+            <Radio className="w-24 h-24 animate-pulse text-cyan-400" />
+            <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping" style={{ animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
+          </div>
+          <p className="text-2xl text-center mb-2">SONAR SILENT</p>
+          <p className="text-sm text-cyan-300 text-center">No teams detected in operational zone. Standing by for incoming vessels...</p>
         </div>
       ) : isCompactView ? (
         <div className="space-y-2">
