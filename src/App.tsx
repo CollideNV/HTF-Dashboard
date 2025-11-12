@@ -1,4 +1,5 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import useTime from "./hooks/useTime";
 import useMarineLife from "./hooks/useMarineLife";
 import useTeams from "./hooks/useTeams";
@@ -10,6 +11,7 @@ import BriefingPanel from "./components/BriefingPanel";
 import SensorGrid from "./components/SensorGrid";
 import MissionStatus from "./components/MissionStatus";
 import ProtectedBackoffice from "./components/ProtectedBackoffice";
+import Vote from "./components/Vote";
 
 const Dashboard = () => {
   const { time, timeLeft, formatTimeLeft } = useTime();
@@ -24,6 +26,7 @@ const Dashboard = () => {
     setIsCompactView,
     toggleFullScreen,
   } = useUI(teams);
+  const [showVoteModal, setShowVoteModal] = useState(false);
 
   if (isLoading) {
     return (
@@ -79,6 +82,7 @@ const Dashboard = () => {
           isCompactView={isCompactView}
           onToggleCompactView={() => setIsCompactView(!isCompactView)}
           onShowBriefing={() => setShowBriefing(true)}
+          onOpenVote={() => setShowVoteModal(true)}
           time={time}
           onToggleFullScreen={toggleFullScreen}
           timeLeft={timeLeft}
@@ -94,6 +98,8 @@ const Dashboard = () => {
           sliderIndex={sliderIndex}
         />
       </div>
+
+      <Vote isOpen={showVoteModal} onClose={() => setShowVoteModal(false)} />
     </div>
   );
 };

@@ -1,11 +1,12 @@
 import React from "react";
-import { BookOpen, ListTodo, AlertTriangle } from "lucide-react";
+import { BookOpen, ListTodo, AlertTriangle, Vote as VoteIcon, Brain } from "lucide-react";
 import logo from "../assets/images/logo.png";
 
 interface HeaderProps {
   isCompactView: boolean;
   onToggleCompactView: () => void;
   onShowBriefing: () => void;
+  onOpenVote: () => void;
   time: Date;
   onToggleFullScreen: () => void;
   timeLeft: number;
@@ -16,6 +17,7 @@ const Header: React.FC<HeaderProps> = ({
   isCompactView,
   onToggleCompactView,
   onShowBriefing,
+  onOpenVote,
   time,
   onToggleFullScreen,
   timeLeft,
@@ -57,6 +59,20 @@ const Header: React.FC<HeaderProps> = ({
           <span className="text-sm">
             {isCompactView ? "SHOW DASHBOARD" : "COMPACT VIEW"}
           </span>
+        </button>
+        <button
+          onClick={onOpenVote}
+          className="flex items-center space-x-2 text-cyan-300 font-mono hover:text-white hover:bg-cyan-500/20 px-3 py-2 rounded-lg transition-colors"
+        >
+          <VoteIcon className="w-5 h-5" />
+          <span className="text-sm">VOTE</span>
+        </button>
+        <button
+          onClick={() => window.open("https://tally.so/r/Y5DR1v", "_blank")}
+          className="flex items-center space-x-2 text-cyan-300 font-mono hover:text-white hover:bg-cyan-500/20 px-3 py-2 rounded-lg transition-colors"
+        >
+          <Brain className="w-5 h-5" />
+          <span className="text-sm">AI SURVEY</span>
         </button>
       </div>
 
